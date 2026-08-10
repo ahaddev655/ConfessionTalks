@@ -1,0 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
+
+button,
+input,
+textarea {
+  outline: none;
+}
+
+.checkbox {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+
+  &:checked {
+    background-color: #2563eb;
+    border-color: #2563eb;
+  }
+
+  &:checked::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 5px;
+    border-left: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -60%) rotate(-45deg);
+  }
+}

@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-dark: #1e293b;
+  --color-brand-accent: #2563eb;
+  --color-hover-blue: #1d4ed8;
+  --color-app-bg: #f8fafc;
+  --color-card-bg: #ffffff;
+  --color-heading-text: #0f172a;
+  --color-body-text: #334155;
+  --color-subtext: #64748b;
+  --color-border-color: #e2e8f0;
+  --color-warning: #dc2626;
+  --color-warning-hover: #b91c1c;
+}
+
+body {
+  @apply bg-app-bg;
+}
