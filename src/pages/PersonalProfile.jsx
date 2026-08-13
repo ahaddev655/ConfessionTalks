@@ -46,7 +46,7 @@ const PersonalProfile = () => {
     },
   ];
   return (
-    <div className="flex flex-col items-center justify-center max-w-2xl p-6 mx-auto">
+    <div className="flex flex-col items-center justify-center max-w-4xl p-6 mx-auto">
       {/* Profile */}
       <div className="flex items-start max-w-2xl gap-6 mx-auto rounded-2xl">
         {/* Avatar Section */}
