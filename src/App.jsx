@@ -28,7 +28,7 @@ function App() {
       ],
     },
     {
-      path: "reels",
+      path: "/reels",
       element: <ReelsPage />,
     },
     {

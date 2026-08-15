@@ -3,7 +3,7 @@ import { Bookmark, Grid3x3, RefreshCw, SquarePlay } from "lucide-react";
 import Reels from "./../components/Profile/Reels";
 import Posts from "./../components/Profile/Posts";
 import BookMarks from "./../components/Profile/BookMarks";
-import Remix from "./../components/Profile/Remix";
+
 const PersonalProfile = () => {
   // ---- UseStates ----
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,12 +38,12 @@ const PersonalProfile = () => {
       icon: Bookmark,
       label: "Saved",
     },
-    {
-      id: 4,
-      key: "remix",
-      icon: RefreshCw,
-      label: "Remix",
-    },
+    // {
+    //   id: 4,
+    //   key: "remix",
+    //   icon: RefreshCw,
+    //   label: "Remix",
+    // },
   ];
   return (
     <div className="flex flex-col items-center justify-center max-w-4xl p-6 mx-auto">
@@ -149,7 +149,7 @@ const PersonalProfile = () => {
         ) : tabToggle === "saved" ? (
           <BookMarks />
         ) : (
-          <Remix />
+          ""
         )}
       </div>
     </div>
