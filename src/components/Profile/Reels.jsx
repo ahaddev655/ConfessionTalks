@@ -119,7 +119,7 @@ const Reels = () => {
                   <Fragment key={i}>
                     <div className="flex items-center">
                       <div className="w-full">
-                        <div className="flex items-start justify-between gap-3 w-full">
+                        <div className="flex items-start justify-between w-full gap-3">
                           <Link to={`/en/@ahad.shk.0`} className="shrink-0">
                             <img
                               src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
@@ -155,7 +155,7 @@ const Reels = () => {
                         </div>
                       </div>
                     </div>
-                    <hr className="border-border-color my-3 rounded-full" />
+                    <hr className="my-3 rounded-full border-border-color" />
                   </Fragment>
                 ))}
             </div>

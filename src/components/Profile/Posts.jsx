@@ -121,7 +121,7 @@ const Posts = () => {
                       </p>
                     )} */}
                       <div className="w-full">
-                        <div className="flex items-start justify-between gap-3 w-full">
+                        <div className="flex items-start justify-between w-full gap-3">
                           <Link to={`/en/@ahad.shk.0`} className="shrink-0">
                             <img
                               src={

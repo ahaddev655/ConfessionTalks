@@ -6,9 +6,14 @@ import HomePage from "./pages/HomePage";
 import ReelsPage from "./pages/ReelsPage";
 import StoriesPage from "./pages/StoriesPage";
 import PersonalProfile from "./pages/PersonalProfile";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   const routes = createBrowserRouter([
+    {
+      path: "*",
+      element: <ErrorPage />,
+    },
     {
       path: "/",
       element: <AuthenticationPage />,
@@ -31,10 +36,10 @@ function App() {
       path: "/reels",
       element: <ReelsPage />,
     },
-    {
-      path: "/reels/:video_id",
-      element: <ReelsPage />,
-    },
+    // {
+    //   path: "/reels/:video_id",
+    //   element: <ReelsPage />,
+    // },
     {
       path: "/stories/:user_name",
       element: <StoriesPage />,
