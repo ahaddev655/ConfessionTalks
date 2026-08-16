@@ -6,8 +6,9 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import InputItem from "../components/InputItem";
 import GoogleIcon from "../assets/google.png";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { Lock, Mail, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Lock, Mail, RotateCw, User } from "lucide-react";
+import axios from "axios";
 
 const AuthenticationPage = () => {
   // ---- Variables ----
@@ -54,6 +55,10 @@ const AuthenticationPage = () => {
         toast.error("UserName is invalid");
         return;
       }
+      if (formData?.uname?.trim().includes("@")) {
+        toast.error("Please remove @ from username");
+        return;
+      }
       if (formData.pass?.length < 8) {
         toast.error("Password must consist of 8 characters");
         return;
@@ -62,27 +67,91 @@ const AuthenticationPage = () => {
         toast.error("You must agree to the terms and policies.");
         return;
       }
+
+      // Configure Loading
+      setLoading(true);
+
+      // API Configuration
+      axios
+        .post("http://localhost:3000/api/auth/register", formData, {
+          withCredentials: true, // To accept cookie
+        })
+        .then((response) => {
+          setTimeout(() => {
+            toast.success(response?.data.message || "Registeration Successful");
+          }, 1500);
+
+          setTimeout(() => {
+            navigate("/en");
+          }, 2500);
+        })
+        .catch((error) => {
+          setTimeout(() => {
+            toast.error(error?.response?.data.error || "Internal Server Error");
+          }, 1500);
+        })
+        .finally(() => {
+          setTimeout(() => {
+            setLoading(false); // Deconfigure Loading
+          }, 1500);
+        });
+
+      // Reset all the fields
+      setFormData({
+        fname: "",
+        uname: "",
+        email: "",
+        pass: "",
+        rememberMe: false,
+        terms: false,
+      });
+      return;
     }
+    // ---- Validations ----
+    if (!formData.email || !formData.pass) {
+      toast.error("All Fields are required.");
+      return;
+    }
+
+    // Configure Loading
+    setLoading(true);
+
+    // Configure Payload
     const payload = {
-      fname: "",
-      uname: "",
-      email: "",
-      pass: "",
-      rememberMe: false,
+      email: formData.email,
+      pass: formData.pass,
     };
 
-    toast.success("Form Submitted Successfully");
-    localStorage.setItem("ct_id", "1234567890");
-    navigate("/home");
+    // API Configuration
+    axios
+      .post("http://localhost:3000/api/auth/login", payload, {
+        withCredentials: true, // To accept cookie
+      })
+      .then((response) => {
+        setTimeout(() => {
+          toast.success(response?.data.message || "Registeration Successful");
+        }, 1500);
 
-    setFormData({
-      fname: "",
-      uname: "",
-      email: "",
-      pass: "",
-      rememberMe: false,
-      terms: false,
-    });
+        // Reset all the fields
+        setFormData({
+          email: "",
+          pass: "",
+        });
+
+        setTimeout(() => {
+          navigate("/en");
+        }, 2500);
+      })
+      .catch((error) => {
+        setTimeout(() => {
+          toast.error(error?.response?.data.error || "Internal Server Error");
+        }, 1500);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setLoading(false); // Deconfigure Loading
+        }, 1500);
+      });
   };
 
   return (
@@ -180,7 +249,7 @@ const AuthenticationPage = () => {
                     htmlFor="rememberMe"
                     className="text-xs font-normal leading-tight cursor-pointer select-none text-subtext"
                   >
-                    Remember Me
+                    Remember me for 1 week
                   </label>
                 </div>
 
@@ -198,7 +267,15 @@ const AuthenticationPage = () => {
                     htmlFor="terms"
                     className="text-xs font-normal leading-tight cursor-pointer select-none text-subtext"
                   >
-                    You agree to the terms and policies of ConfessionTalks
+                    You agree to the{" "}
+                    <span className="text-brand-accent">
+                      <Link to={'/policies'}>terms</Link>
+                    </span>{" "}
+                    and{" "}
+                    <span className="text-brand-accent">
+                      <Link to={'/policies'}>policies</Link>{" "}
+                    </span>{" "}
+                    of ConfessionTalks
                   </label>
                 </div>
               </div>
@@ -209,6 +286,7 @@ const AuthenticationPage = () => {
               type="submit"
               className="w-full mt-4! flex items-center justify-center gap-2 py-2.5 px-4 bg-brand-accent hover:bg-hover-blue active:bg-blue-800 text-white text-base font-medium rounded-lg shadow-md shadow-indigo-200 hover:shadow-lg transition duration-200"
             >
+              {loading && <RotateCw className="animate-spin" />}
               {loading
                 ? login
                   ? "Signing you in..."
@@ -216,34 +294,9 @@ const AuthenticationPage = () => {
                 : login
                   ? "Sign In"
                   : "Create Account"}
-              <FaArrowRightLong className="w-4 h-4 shrink-0" />
+              {!loading && <FaArrowRightLong className="w-4 h-4 shrink-0" />}
             </button>
           </form>
-
-          {/* Google Login */}
-          <div className="mt-4">
-            {/* Divider */}
-            <div className="flex items-center justify-center gap-3 my-4">
-              <div className="w-full h-px bg-gray-200" />
-              <span className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                OR
-              </span>
-              <div className="w-full h-px bg-gray-200" />
-            </div>
-
-            {/* Button */}
-            <button
-              type="button"
-              className="bg-white shadow-sm w-full flex items-center justify-center border border-border-color py-2.5 rounded-lg gap-2.5 text-base font-semibold text-body-text hover:shadow-md transition-shadow"
-            >
-              <img
-                src={GoogleIcon}
-                alt="Google Icon"
-                className="object-contain w-5 h-5 shrink-0"
-              />
-              Continue With Google
-            </button>
-          </div>
 
           {/* SignUp Switching */}
           <p className="mt-4 text-xs font-medium text-center text-subtext">
