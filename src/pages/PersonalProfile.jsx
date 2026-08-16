@@ -1,22 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bookmark, Grid3x3, RefreshCw, SquarePlay } from "lucide-react";
 import Reels from "./../components/Profile/Reels";
 import Posts from "./../components/Profile/Posts";
 import BookMarks from "./../components/Profile/BookMarks";
+import axios from "axios";
 
 const PersonalProfile = () => {
   // ---- UseStates ----
   const [isExpanded, setIsExpanded] = useState(false);
   const [tabToggle, setTabToggle] = useState("posts");
-  const [userData, setUserData] = useState({
-    fullname: "Muhammad Ahad",
-    username: "ahad.shk.0",
-    following: 72,
-    followers: 113,
-    posts: 22,
-    description:
-      "I move in silence; depth in my eyes. Mystery guards my mind, attitude sets limits; some stories are felt, not explained. Not everyone can control me.",
-  });
+  const [loading, setLoading] = useState(false);
+
+  // ---- UseState Arrays ----
+  const [userData, setUserData] = useState(null);
+
+  // ---- Variables ----
+  const id = localStorage.getItem("cota_id");
 
   // ---- Arrays ----
   const navigation_tabs = [
@@ -45,6 +44,36 @@ const PersonalProfile = () => {
     //   label: "Remix",
     // },
   ];
+
+  // ---- API Configuration ----
+  const getDetails = () => {
+    axios
+      .get(`http://localhost:3000/api/user/${id}`)
+      .then((response) => {
+        setUserData(response?.data.user_details); // adding data to the state
+      })
+      .catch((error) => {
+        alert(error?.response.data.error);
+      });
+  };
+
+  // ---- Counts ----
+  const postsCount = Array.isArray(userData?.posts)
+    ? userData.posts.length
+    : Object.keys(userData?.posts || {}).length;
+
+  const followersCount = Array.isArray(userData?.followers)
+    ? userData.followers.length
+    : Object.keys(userData?.followers || {}).length;
+
+  const followingCount = Array.isArray(userData?.following)
+    ? userData.following.length
+    : Object.keys(userData?.following || {}).length;
+
+  useEffect(() => {
+    getDetails();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center max-w-4xl p-6 mx-auto">
       {/* Profile */}
@@ -57,7 +86,7 @@ const PersonalProfile = () => {
                 userData?.profilePic ||
                 "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
               }
-              alt={userData?.username || "User profile"}
+              alt={userData?.userName || "User profile"}
               className="object-cover w-full h-full"
             />
           </div>
@@ -68,10 +97,10 @@ const PersonalProfile = () => {
           {/* User Identity */}
           <div className="flex flex-col">
             <h1 className="text-xl font-bold tracking-tight truncate text-heading-text">
-              {userData?.username || "Username"}
+              {userData?.userName || "Unknown"}
             </h1>
             <p className="text-sm font-medium text-subtext">
-              {userData?.fullname}
+              {userData?.fullName || "Unknown"}
             </p>
           </div>
 
@@ -79,14 +108,14 @@ const PersonalProfile = () => {
           <div className="mt-4 flex items-center gap-6 border-y border-border-color py-2.5">
             <div className="flex items-baseline gap-1.5">
               <span className="text-base font-bold text-heading-text">
-                {userData?.posts ? userData.posts.toLocaleString() : 0}
+                {postsCount || 0}
               </span>
               <span className="text-xs font-medium text-subtext">posts</span>
             </div>
 
             <div className="flex items-baseline gap-1.5">
               <span className="text-base font-bold text-heading-text">
-                {userData?.followers ? userData.followers.toLocaleString() : 0}
+                {followersCount || 0}
               </span>
               <span className="text-xs font-medium text-subtext">
                 followers
@@ -95,7 +124,7 @@ const PersonalProfile = () => {
 
             <div className="flex items-baseline gap-1.5">
               <span className="text-base font-bold text-heading-text">
-                {userData?.following ? userData.following.toLocaleString() : 0}
+                {followingCount || 0}
               </span>
               <span className="text-xs font-medium text-subtext">
                 following
@@ -104,15 +133,15 @@ const PersonalProfile = () => {
           </div>
 
           {/* Expandable Description */}
-          {userData?.description && (
+          {userData?.description ? (
             <div className="mt-3 text-sm text-body-text">
               <p
                 className={`leading-relaxed ${!isExpanded ? "line-clamp-2" : ""}`}
               >
-                {userData.description}
+                {userData?.description}
               </p>
 
-              {userData.description.length > 150 && (
+              {userData?.description.length > 150 && (
                 <button
                   type="button"
                   onClick={() => setIsExpanded(!isExpanded)}
@@ -122,12 +151,14 @@ const PersonalProfile = () => {
                 </button>
               )}
             </div>
+          ) : (
+            <div className="mt-3 text-sm text-body-text">No description.</div>
           )}
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center justify-between w-full gap-3 border-b-2 border-b-border-color">
+      {/* <div className="flex items-center justify-between w-full gap-3 border-b-2 border-b-border-color">
         {navigation_tabs.map((tab) => (
           <div
             onClick={() => setTabToggle(tab.key)}
@@ -138,10 +169,10 @@ const PersonalProfile = () => {
             <span>{tab.label}</span>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Content */}
-      <div className="mt-3">
+      {/* <div className="mt-3">
         {tabToggle === "posts" ? (
           <Posts />
         ) : tabToggle === "reels" ? (
@@ -151,7 +182,7 @@ const PersonalProfile = () => {
         ) : (
           ""
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

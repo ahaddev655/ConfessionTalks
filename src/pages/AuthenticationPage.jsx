@@ -9,9 +9,11 @@ import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { Lock, Mail, RotateCw, User } from "lucide-react";
 import axios from "axios";
+import { useEffect } from "react";
 
 const AuthenticationPage = () => {
   // ---- Variables ----
+  const id = localStorage.getItem("cota_id");
   const navigate = useNavigate();
 
   // ---- User Data Object ----
@@ -40,6 +42,10 @@ const AuthenticationPage = () => {
 
   // ---- Form Submit ----
   const handleSubmit = () => {
+    if (loading) {
+      return;
+    }
+
     if (!login) {
       // ---- Validations ----
       if (
@@ -81,6 +87,18 @@ const AuthenticationPage = () => {
             toast.success(response?.data.message || "Registeration Successful");
           }, 1500);
 
+          // Reset all the fields
+          setFormData({
+            fname: "",
+            uname: "",
+            email: "",
+            pass: "",
+            rememberMe: false,
+            terms: false,
+          });
+
+          // store the id in local storage
+          localStorage.setItem("cota_id", response?.data.id);
           setTimeout(() => {
             navigate("/en");
           }, 2500);
@@ -95,18 +113,9 @@ const AuthenticationPage = () => {
             setLoading(false); // Deconfigure Loading
           }, 1500);
         });
-
-      // Reset all the fields
-      setFormData({
-        fname: "",
-        uname: "",
-        email: "",
-        pass: "",
-        rememberMe: false,
-        terms: false,
-      });
       return;
     }
+
     // ---- Validations ----
     if (!formData.email || !formData.pass) {
       toast.error("All Fields are required.");
@@ -132,6 +141,9 @@ const AuthenticationPage = () => {
           toast.success(response?.data.message || "Registeration Successful");
         }, 1500);
 
+        // id set to local
+        localStorage.setItem("cota_id", response?.data.id);
+
         // Reset all the fields
         setFormData({
           email: "",
@@ -153,6 +165,22 @@ const AuthenticationPage = () => {
         }, 1500);
       });
   };
+
+  // ---- UseEffects ----
+  useEffect(() => {
+    if (!id || id === null) {
+      toast.error("ID not found");
+      return;
+    }
+    axios
+      .get(`http://localhost:3000/api/auth/verify/${id}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        navigate("/en");
+      })
+      .catch((error) => {});
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6">
@@ -269,11 +297,11 @@ const AuthenticationPage = () => {
                   >
                     You agree to the{" "}
                     <span className="text-brand-accent">
-                      <Link to={'/policies'}>terms</Link>
+                      <Link to={"/policies"}>terms</Link>
                     </span>{" "}
                     and{" "}
                     <span className="text-brand-accent">
-                      <Link to={'/policies'}>policies</Link>{" "}
+                      <Link to={"/policies"}>policies</Link>{" "}
                     </span>{" "}
                     of ConfessionTalks
                   </label>
