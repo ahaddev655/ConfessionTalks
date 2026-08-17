@@ -35,12 +35,10 @@ const StoriesPage = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
 
-  // ---- UseRefs ----
+  // ---- UseRefs & Navigation ----
   const videoRef = useRef(null);
-  const currentStory = stories[currentIndex];
-
-  // ---- Variables ----
   const navigate = useNavigate();
+  const currentStory = stories[currentIndex];
 
   // ---- Functions ----
   const handleTimeUpdate = () => {
@@ -104,21 +102,28 @@ const StoriesPage = () => {
   }, [currentIndex]);
 
   return (
-    <div className="relative flex items-center justify-center h-screen select-none bg-neutral-900">
-      <div className="absolute top-4 left-4">
-        <button type="button" className="text-white hover:text-gray-300">
-          <X size={24} onClick={() => navigate("/en")} />
+    <div className="relative flex items-center justify-center h-screen select-none bg-slate-950 overflow-hidden">
+      {/* Top Left Close Button */}
+      <div className="absolute top-5 left-5 z-40">
+        <button
+          type="button"
+          onClick={() => navigate("/en")}
+          className="p-2 rounded-full text-white/80 bg-slate-900/40 backdrop-blur-md hover:bg-slate-900/80 hover:text-white transition-all shadow-md"
+          aria-label="Close stories"
+        >
+          <X size={22} />
         </button>
       </div>
 
+      {/* Main Story Container */}
       <div
-        className="relative h-[90%] w-full max-w-sm rounded-2xl overflow-hidden bg-black shadow-2xl cursor-pointer"
+        className="relative h-[90%] w-full max-w-sm rounded-2xl overflow-hidden bg-slate-900 shadow-2xl cursor-pointer border border-white/10"
         onClick={handleTap}
       >
-        {/* Active Video Element */}
+        {/* Active Story Video */}
         <video
           ref={videoRef}
-          src={currentStory.video_url}
+          src={currentStory?.video_url}
           className="object-cover w-full h-full"
           autoPlay
           muted={isMuted}
@@ -127,9 +132,9 @@ const StoriesPage = () => {
           onEnded={handleNext}
         />
 
-        {/* Top Header & Progress Bars */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex flex-col gap-2 p-3 bg-linear-to-b from-black/70 to-transparent">
-          {/* Progress Bars Container */}
+        {/* Top Header & Story Progress Overlay */}
+        <div className="absolute top-0 left-0 right-0 z-10 flex flex-col gap-2 p-3 bg-linear-to-b from-slate-950/80 via-slate-950/40 to-transparent">
+          {/* Progress Bars Row */}
           <div className="flex w-full space-x-1">
             {stories.map((story, index) => {
               let barWidth = "0%";
@@ -153,33 +158,40 @@ const StoriesPage = () => {
             })}
           </div>
 
-          {/* User Profile Bar */}
+          {/* Profile Details & Media Controls */}
           <div className="flex items-center justify-between mt-1">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 min-w-0">
               <img
-                src={currentStory.user.avatar}
-                alt={currentStory.user.username}
-                className="object-cover w-8 h-8 border rounded-full border-white/50"
+                src={
+                  currentStory?.user?.avatar ||
+                  "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                }
+                alt={currentStory?.user?.username || "User avatar"}
+                className="object-cover w-8 h-8 border rounded-full border-white/40 shrink-0"
               />
-              <span className="text-sm font-semibold text-white drop-shadow">
-                {currentStory.user.username}
+              <span className="text-sm font-semibold text-white truncate drop-shadow">
+                {currentStory?.user?.username || "user"}
               </span>
             </div>
 
-            {/* Mute/Unmute & Play/Pause Controls */}
-            <div className="flex items-center space-x-3 text-xs text-white">
+            {/* Sound & Playback Controls */}
+            <div className="flex items-center space-x-2 text-white">
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsMuted(!isMuted);
                 }}
-                className="p-1 hover:opacity-80"
+                className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+                aria-label={isMuted ? "Unmute" : "Mute"}
               >
                 {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
               </button>
               <button
+                type="button"
                 onClick={togglePlayPause}
-                className="p-1 hover:opacity-80"
+                className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+                aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? <Pause size={18} /> : <Play size={18} />}
               </button>

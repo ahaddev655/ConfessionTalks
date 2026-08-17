@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import DummyImage from "../../assets/Screenshot 2026-08-11 225421.png";
 import DummyVideo from "../../assets/sample2.mp4";
-import { Eye, Heart, SquarePlay, SquaresSubtract } from "lucide-react";
+import { Eye, Heart, SquarePlay, SquaresSubtract, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { HiSquare2Stack } from "react-icons/hi2";
 import { AiFillPlaySquare } from "react-icons/ai";
@@ -17,12 +17,22 @@ const formatCount = (count) => {
 const BookMarks = () => {
   // ---- UseStates ----
   const [selectedVideo, setSelectedVideo] = useState(null);
-  // const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [popUpToggle, setPopUpToggle] = useState(false);
   const [videoShow, setVideoShow] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [bookmarks, setBookmarks] = useState(null);
+
+  // Mock comments array to prevent render errors if empty
+  const comments = [
+    {
+      id: 1,
+      user: "ahad.shk.0",
+      comment: "Saved this for reference!",
+      likes: "12.1K",
+    },
+  ];
 
   // ---- Refs ----
   const videoRef = useRef(null);
@@ -77,21 +87,32 @@ const BookMarks = () => {
   }, [popUpToggle]);
 
   return (
-    <>
-      {/* Modal */}
+    <div className="w-full flex flex-col items-center justify-center">
+      {/* Modal Popup */}
       <div
-        className={`fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${
-          popUpToggle ? "opacity-100" : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-slate-900/40 backdrop-blur-sm transition-opacity duration-200 ${
+          popUpToggle
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
         onClick={handleClosePopup}
       >
         <div
-          className="flex items-center w-full h-full max-w-6xl max-h-[85vh] border rounded-lg shadow-md bg-card-bg border-border-color overflow-hidden"
+          className="relative flex flex-col sm:flex-row items-center w-full max-w-4xl h-[85vh] max-h-175 border rounded-2xl shadow-2xl bg-white border-slate-200 overflow-hidden mx-4"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Close Button */}
+          <button
+            onClick={handleClosePopup}
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           {selectedVideo && (
             <>
-              <div className="h-full w-[40%] shrink-0">
+              {/* Media Container (Left Side) */}
+              <div className="h-2/5 sm:h-full w-full sm:w-[45%] shrink-0 bg-slate-950 flex items-center justify-center">
                 {videoShow ? (
                   <video
                     ref={videoRef}
@@ -105,85 +126,82 @@ const BookMarks = () => {
                 ) : (
                   <img
                     src={selectedVideo.thumbnail}
-                    alt="IMG"
-                    className="object-cover w-full h-full rounded-l-lg"
+                    alt="Bookmark preview"
+                    className="object-cover w-full h-full"
                   />
                 )}
               </div>
 
-              {/* Right Side */}
-              <div className="w-[60%] h-full pt-4 flex flex-col min-h-0">
-                {/* Profile */}
-                <div className="flex items-center gap-2.5 px-4 pb-3 border-b border-border-color shrink-0">
-                  {/* Avatar */}
-                  <div className="bg-black rounded-full shrink-0 w-11 h-11">
+              {/* Content / Comments Container (Right Side) */}
+              <div className="w-full sm:w-[55%] h-3/5 sm:h-full pt-4 flex flex-col min-h-0 bg-white">
+                {/* Header Profile Bar */}
+                <div className="flex items-center gap-3 px-5 pb-3 border-b border-slate-100 shrink-0">
+                  <div className="bg-slate-100 rounded-full shrink-0 w-10 h-10 overflow-hidden ring-1 ring-slate-200">
                     <img
-                      src={selectedVideo?.user_details.avatar}
-                      alt="IMG"
-                      className="object-cover w-full h-full rounded-full"
+                      src={
+                        selectedVideo?.user_details?.avatar ||
+                        "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                      }
+                      alt="Avatar"
+                      className="object-cover w-full h-full"
                     />
                   </div>
 
-                  {/* Details */}
-                  <div>
-                    <h1 className="flex items-center gap-2 text-sm font-semibold tracking-wide">
-                      {selectedVideo?.user_details.username} <span>•</span>
+                  <div className="flex-1 min-w-0">
+                    <h1 className="flex items-center gap-2 text-sm font-semibold text-slate-900 truncate">
+                      {selectedVideo?.user_details?.username || "ahad.shk.0"}
+                      <span className="text-slate-300">•</span>
                       <button
                         type="button"
-                        className="transition-colors hover:underline text-brand-accent hover:text-hover-blue"
+                        className="text-blue-600 hover:text-blue-700 font-semibold transition-colors hover:underline text-xs"
                       >
                         Follow
                       </button>
                     </h1>
-                    <p className="text-xs tracking-wide text-subtext">
-                      Original Audio — ahad.shk.0
+                    <p className="text-xs text-slate-500 truncate">
+                      Original Audio —{" "}
+                      {selectedVideo?.user_details?.username || "ahad.shk.0"}
                     </p>
                   </div>
                 </div>
 
-                {/* Comments Area */}
-                <div className="flex-1 min-h-0 px-4 py-3 overflow-y-auto scrollbar-thin">
+                {/* Comments List Area */}
+                <div className="flex-1 min-h-0 px-5 py-4 overflow-y-auto space-y-4">
                   {comments.map((commentItem, i) => (
                     <Fragment key={i}>
-                      <div className="flex items-center">
-                        <div className="w-full">
-                          <div className="flex items-start justify-between w-full gap-3">
-                            <Link to={`/en/@ahad.shk.0`} className="shrink-0">
-                              <img
-                                src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                                alt="IMG"
-                                className="object-cover w-10 h-10 transition-all rounded-full ring-2 ring-transparent hover:ring-brand-accent"
-                              />
+                      <div className="flex items-start gap-3">
+                        <Link to={`/en/@ahad.shk.0`} className="shrink-0">
+                          <img
+                            src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                            alt="User avatar"
+                            className="object-cover w-9 h-9 rounded-full ring-1 ring-slate-200 hover:ring-blue-600 transition-all"
+                          />
+                        </Link>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <Link
+                              to={`/en/@ahad.shk.0`}
+                              className="text-xs font-semibold text-slate-900 truncate hover:underline"
+                            >
+                              @{commentItem.user}
                             </Link>
+                          </div>
 
-                            <div className="flex-1 min-w-0">
-                              <div className="flex flex-wrap items-baseline gap-2">
-                                <Link
-                                  to={`/en/@ahad.shk.0`}
-                                  className="text-sm font-semibold truncate text-heading-text hover:underline"
-                                >
-                                  @ahad.shk.0
-                                </Link>
-                              </div>
+                          <p className="mt-1 text-sm text-slate-700 leading-snug wrap-break-word">
+                            {commentItem.comment}
+                          </p>
 
-                              <p className="mt-1 text-sm leading-relaxed text-body-text wrap-break-word">
-                                {commentItem.comment}
-                              </p>
-
-                              <div className="flex items-center gap-4 mt-2 text-xs text-body-text/80">
-                                12.1K likes
-                              </div>
-                            </div>
-
-                            <div className="pt-1 text-body-text/60">
-                              <button className="transition-colors hover:text-red-500">
-                                <Heart className="w-4 h-4" />
-                              </button>
-                            </div>
+                          <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                            <span>{commentItem.likes} likes</span>
                           </div>
                         </div>
+
+                        <button className="text-slate-400 hover:text-red-500 transition-colors p-1">
+                          <Heart className="w-4 h-4" />
+                        </button>
                       </div>
-                      <hr className="my-3 rounded-full border-border-color" />
+                      <div className="border-b border-slate-100 my-2" />
                     </Fragment>
                   ))}
                 </div>
@@ -193,43 +211,44 @@ const BookMarks = () => {
         </div>
       </div>
 
-      {/* Content */}
-      {bookmarks?.length > 0 ? (
-        <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
-          {bookmarksList.map((item) => (
+      {/* Bookmarks Grid / Empty State */}
+      {bookmarks && bookmarks.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full">
+          {bookmarks.map((item) => (
             <div
               key={item.id}
-              className="relative w-full h-full cursor-pointer"
+              className="relative aspect-square w-full cursor-pointer rounded-xl overflow-hidden group border border-slate-200 bg-slate-100"
               onClick={() => {
+                setSelectedVideo(item);
                 setSelectedItem(item);
                 setPopUpToggle(true);
               }}
             >
               <img
-                src={item.thumbnail}
-                alt="IMG"
-                className="object-cover w-full h-full rounded-md"
+                src={item.thumbnail || DummyImage}
+                alt="Bookmark item"
+                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
               />
 
-              {/* Type Icon */}
-              <div className="absolute top-3 right-3">
+              {/* Type Badge */}
+              <div className="absolute top-2.5 right-2.5 drop-shadow-md">
                 {item.video ? (
-                  <AiFillPlaySquare fill="white" size={30} />
+                  <AiFillPlaySquare fill="white" size={24} />
                 ) : (
-                  <HiSquare2Stack size={30} fill="white" />
+                  <HiSquare2Stack size={24} fill="white" />
                 )}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div>
-          <p className="text-sm text-subtext">
+        <div className="py-12 text-center">
+          <p className="text-sm font-medium text-slate-500">
             You haven't saved any posts or reels yet.
           </p>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

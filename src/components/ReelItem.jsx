@@ -22,7 +22,7 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
   const [progress, setProgress] = useState(0);
 
   // --- Variables ----
-  const allComments = video.commentList || [];
+  const allComments = video?.commentList || [];
 
   // --- UseEffects ----
   useEffect(() => {
@@ -70,19 +70,19 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
 
   const togglePlayPause = () => {
     if (isPlaying) {
-      videoRef.current.pause();
+      videoRef.current?.pause();
     } else {
-      videoRef.current.play();
+      videoRef.current?.play();
     }
     setIsPlaying(!isPlaying);
   };
 
   return (
-    <div className="relative flex items-center justify-center w-full h-full bg-black snap-start shrink-0">
-      <div className="relative w-full h-full max-w-sm overflow-hidden bg-black">
+    <div className="relative flex items-center justify-center w-full h-full bg-slate-950 snap-start shrink-0">
+      <div className="relative w-full h-full max-w-sm overflow-hidden bg-slate-950">
         <video
           ref={videoRef}
-          src={video.video_url}
+          src={video?.video_url}
           className="object-cover w-full h-full cursor-pointer"
           loop
           muted={isMuted}
@@ -94,7 +94,7 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
         {/* Mute/Unmute Overlay Button */}
         <button
           onClick={toggleMute}
-          className="absolute z-20 p-2 text-white transition rounded-full top-4 right-4 bg-black/40 backdrop-blur-md hover:bg-black/60"
+          className="absolute z-20 p-2 text-white transition rounded-full top-4 right-4 bg-slate-900/40 backdrop-blur-md hover:bg-slate-900/60"
         >
           {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
         </button>
@@ -103,69 +103,84 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
         <div className="absolute z-20 flex flex-col items-center gap-5 text-white right-3 bottom-20">
           <button
             onClick={() => setLiked(!liked)}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center group"
           >
             <Heart
               size={28}
-              className={liked ? "fill-red-500 text-red-500" : "text-white"}
+              className={`transition-colors ${
+                liked
+                  ? "fill-red-500 text-red-500"
+                  : "text-white group-hover:text-slate-200"
+              }`}
             />
             <span className="mt-1 text-xs font-semibold">
-              {video.likes + (liked ? 1 : 0)}
+              {(video?.likes || 0) + (liked ? 1 : 0)}
             </span>
           </button>
 
           <button
             onClick={() => setCommentsToggle(true)}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center group"
           >
-            <MessageCircle size={28} />
+            <MessageCircle
+              size={28}
+              className="text-white group-hover:text-slate-200 transition-colors"
+            />
             <span className="mt-1 text-xs font-semibold">
               {allComments.length}
             </span>
           </button>
 
-          <button className="flex flex-col items-center">
-            <Share2 size={28} />
-            <span className="mt-1 text-xs">Share</span>
+          <button className="flex flex-col items-center group">
+            <Share2
+              size={28}
+              className="text-white group-hover:text-slate-200 transition-colors"
+            />
+            <span className="mt-1 text-xs font-medium">Share</span>
           </button>
         </div>
 
-        {/* Bottom Details */}
-        <div className="absolute left-0 z-20 p-4 text-white bottom-3 right-12 bg-linear-to-t from-black/90 via-black/50 to-transparent">
+        {/* Bottom Details Overlay */}
+        <div className="absolute left-0 z-20 p-4 text-white bottom-3 right-12 bg-linear-to-t from-slate-950/90 via-slate-950/50 to-transparent">
           <div className="flex items-center gap-3 mb-2">
             <img
-              src={video.user.avatar || "https://via.placeholder.com/40"}
-              alt={video.user.username}
-              className="object-cover border rounded-full w-9 h-9 border-white/40"
+              src={
+                video?.user?.avatar ||
+                "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+              }
+              alt={video?.user?.username || "User avatar"}
+              className="object-cover border rounded-full w-9 h-9 border-white/30 shrink-0"
             />
-            <span className="text-sm font-semibold">
-              @{video.user.username}
+            <span className="text-sm font-semibold truncate">
+              @{video?.user?.username || "user"}
             </span>
-            <button className="px-3 py-1 text-xs font-semibold border rounded-full bg-white/20 backdrop-blur-sm border-white/40">
+            <button className="px-3 py-1 text-xs font-semibold border rounded-full bg-white/20 backdrop-blur-sm border-white/40 hover:bg-white/30 transition-colors shrink-0">
               Follow
             </button>
           </div>
 
-          <div className="mb-2 overflow-auto max-h-100 scrollbar-none">
+          <div className="mb-2 max-h-28 overflow-y-auto scrollbar-none">
             <p
-              className={`text-sm text-gray-200 ${!isExpanded ? "line-clamp-2" : ""}`}
+              className={`text-sm text-slate-200 leading-snug wrap-break-word ${
+                !isExpanded ? "line-clamp-2" : ""
+              }`}
             >
-              {video.description}
+              {video?.description}
             </p>
-            {video.description?.length > 85 && (
+            {video?.description?.length > 85 && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-1 text-xs font-semibold text-gray-400 underline hover:text-white"
+                className="mt-1 text-xs font-semibold text-slate-400 underline hover:text-white transition-colors"
               >
                 {isExpanded ? "less" : "more"}
               </button>
             )}
           </div>
 
-          {video.hashtags && (
-            <div className="flex flex-wrap gap-2 text-xs font-medium text-blue-400">
+          {video?.hashtags && video.hashtags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 text-xs font-medium text-blue-400">
               {video.hashtags.map((tag, i) => (
-                <span key={i}>{tag}</span>
+                <span key={i}>#{tag.replace(/^#/, "")}</span>
               ))}
             </div>
           )}
@@ -175,36 +190,38 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
         <div
           ref={progressBarRef}
           onClick={handleSeek}
-          className="absolute bottom-0 left-0 right-0 z-30 flex items-center h-1.5 rounded-full transition-all cursor-pointer bg-white/20 hover:h-2 group"
+          className="absolute bottom-0 left-0 right-0 z-30 flex items-center h-1.5 transition-all cursor-pointer bg-white/20 hover:h-2 group"
         >
           <div
-            className="relative h-full transition-all duration-75 bg-white rounded-full"
+            className="relative h-full transition-all duration-75 bg-white"
             style={{ width: `${progress}%` }}
-          ></div>
+          />
         </div>
 
-        {/* Comments Modal */}
+        {/* Comments Modal Popup */}
         {commentsToggle && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-200"
             onClick={() => setCommentsToggle(false)}
           >
             <div
-              className="w-full max-w-lg mx-4 rounded-2xl bg-neutral-900 text-white shadow-2xl border border-white/10 flex flex-col max-h-[80vh] overflow-hidden"
+              className="w-full max-w-lg rounded-2xl bg-white text-slate-900 shadow-2xl border border-slate-200 flex flex-col max-h-[80vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-                <h2 className="text-lg font-bold">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                <h2 className="text-base font-bold text-slate-900">
                   Comments ({allComments.length})
                 </h2>
                 <button
                   onClick={() => setCommentsToggle(false)}
-                  className="p-1 text-gray-400 rounded-full hover:text-white hover:bg-white/10"
+                  className="p-1.5 text-slate-400 rounded-full hover:text-slate-600 hover:bg-slate-100 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
+              {/* Modal Content / Comments List */}
               <div className="p-6 space-y-4 overflow-y-auto">
                 {allComments.length > 0 ? (
                   allComments.map((comment, i) => (
@@ -212,30 +229,38 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
                       key={comment.id || i}
                       className="flex items-start gap-3"
                     >
-                      <Link to={`/en/@${comment.user.username}`}>
+                      <Link
+                        to={`/en/@${comment?.user?.username}`}
+                        className="shrink-0"
+                      >
                         <img
-                          src={comment.user.avatar}
-                          alt={comment.user.username}
-                          className="object-cover w-10 h-10 rounded-full"
+                          src={
+                            comment?.user?.avatar ||
+                            "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                          }
+                          alt={comment?.user?.username || "Commenter avatar"}
+                          className="object-cover w-9 h-9 rounded-full ring-1 ring-slate-200 hover:ring-blue-600 transition-all"
                         />
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link
-                          to={`/en/@${comment.user.username}`}
-                          className="text-sm font-semibold hover:underline"
+                          to={`/en/@${comment?.user?.username}`}
+                          className="text-xs font-semibold text-slate-900 hover:underline truncate block"
                         >
-                          @{comment.user.username}
+                          @{comment?.user?.username || "user"}
                         </Link>
-                        <p className="mt-1 text-sm text-gray-300">
+                        <p className="mt-1 text-sm text-slate-700 leading-snug wrap-break-word">
                           {comment.comment}
                         </p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="py-8 text-center text-gray-400">
-                    No comments yet.
-                  </p>
+                  <div className="py-8 text-center">
+                    <p className="text-sm font-medium text-slate-500">
+                      No comments yet.
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -245,4 +270,5 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
     </div>
   );
 };
+
 export default ReelItem;

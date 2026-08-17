@@ -57,17 +57,19 @@ const MainLayout = () => {
 
           {/* Right Column: Main Content + Footer */}
           <div className="flex flex-col flex-1 h-screen min-w-0 overflow-auto">
-            <main className="flex-1 w-full max-w-7xl">
+            <main className="flex-1 w-full max-w-7xl p-6">
               <Outlet />
             </main>
             <MainFooter />
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-screen gap-3">
-          <div className="w-4 h-4 bg-brand-accent rounded-full animate-bounce animatep [animation-delay:-0.3s]" />
-          <div className="w-4 h-4 bg-brand-accent rounded-full animate-bounce animatep [animation-delay:-0.15s]" />
-          <div className="w-4 h-4 bg-brand-accent rounded-full animate-bounce animatep" />
+        <div className="flex items-center justify-center h-screen w-screen bg-slate-950">
+          <div className="flex items-center gap-3">
+            <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+            <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+            <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" />
+          </div>
         </div>
       )}
     </>

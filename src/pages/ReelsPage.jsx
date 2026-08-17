@@ -1,22 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import ReelItem from "../components/ReelItem";
-import {
-  Heart,
-  MessageCircle,
-  Share2,
-  ChevronUp,
-  ChevronDown,
-  Volume2,
-  VolumeX,
-  X,
-} from "lucide-react";
+import { ChevronUp, ChevronDown, X } from "lucide-react";
 
 import SampleVideo from "../assets/sample.mp4";
 import SampleVideo2 from "../assets/sample2.mp4";
 
 const ReelsPage = () => {
-  // ---- Arrays ----
+  // ---- Data Arrays ----
   const videosData = [
     {
       id: 1,
@@ -48,7 +39,7 @@ const ReelsPage = () => {
       video_id: "qasw36210jsd",
       video_url: SampleVideo2,
       description:
-        "Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling.",
+        "Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling. Sample video description demonstrating smooth auto-play and mute toggling.",
       likes: 1250000,
       hashtags: ["#sample", "#video", "#test"],
       commentList: [],
@@ -60,14 +51,14 @@ const ReelsPage = () => {
     },
   ];
 
-  // --- UseStates ----
+  // ---- UseStates ----
   const [isMuted, setIsMuted] = useState(true);
 
-  // ---- UseRefs ----
+  // ---- Hooks & Refs ----
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
-  // --- Functions ----
+  // ---- Functions ----
   const scroll = (direction) => {
     if (!containerRef.current) return;
     const offset =
@@ -78,16 +69,23 @@ const ReelsPage = () => {
   };
 
   return (
-    <div className="relative flex items-center justify-center w-screen h-screen bg-neutral-900">
-      <div className="absolute top-4 left-4">
-        <button type="button" className="text-white hover:text-gray-300">
-          <X size={24} onClick={() => navigate("/en")} />
+    <div className="relative flex items-center justify-center w-screen h-screen bg-slate-950 overflow-hidden">
+      {/* Top Left Back/Close Button with Smooth Hover Scaling */}
+      <div className="absolute top-5 left-5 z-40 transition-transform duration-200 hover:scale-105 active:scale-95">
+        <button
+          type="button"
+          onClick={() => navigate("/en")}
+          className="p-2.5 rounded-full text-white/80 bg-slate-900/50 backdrop-blur-md hover:bg-slate-900/90 hover:text-white transition-all duration-200 shadow-lg border border-white/10"
+          aria-label="Close feed"
+        >
+          <X size={22} />
         </button>
       </div>
 
+      {/* Reel Feed Scroll Container */}
       <div
         ref={containerRef}
-        className="w-full max-w-sm h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="w-full max-w-sm h-full overflow-y-scroll snap-y snap-mandatory scroll-smooth scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {videosData.map((video) => (
           <ReelItem
@@ -99,18 +97,21 @@ const ReelsPage = () => {
         ))}
       </div>
 
-      <div className="absolute z-30 flex-col hidden gap-4 -translate-y-1/2 right-4 top-1/2 md:flex">
+      {/* Desktop Navigation Arrows with Hover Glow and Spring Transition */}
+      <div className="absolute z-30 hidden md:flex flex-col gap-3 -translate-y-1/2 right-6 top-1/2">
         <button
           onClick={() => scroll("up")}
-          className="p-3 text-white transition rounded-full shadow-lg bg-neutral-800/80 hover:bg-neutral-700"
+          className="p-3 text-white transition-all duration-200 ease-out rounded-full shadow-xl bg-slate-900/60 backdrop-blur-md hover:bg-slate-800 hover:scale-110 hover:border-white/20 border border-white/10 active:scale-90"
+          aria-label="Previous reel"
         >
-          <ChevronUp size={24} />
+          <ChevronUp size={22} />
         </button>
         <button
           onClick={() => scroll("down")}
-          className="p-3 text-white transition rounded-full shadow-lg bg-neutral-800/80 hover:bg-neutral-700"
+          className="p-3 text-white transition-all duration-200 ease-out rounded-full shadow-xl bg-slate-900/60 backdrop-blur-md hover:bg-slate-800 hover:scale-110 hover:border-white/20 border border-white/10 active:scale-90"
+          aria-label="Next reel"
         >
-          <ChevronDown size={24} />
+          <ChevronDown size={22} />
         </button>
       </div>
     </div>

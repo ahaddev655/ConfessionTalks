@@ -1,7 +1,7 @@
 import dummyImage from "../../assets/Screenshot 2026-08-11 225421.png";
 import dummyVideo from "../../assets/sample2.mp4";
 import { Link } from "react-router-dom";
-import { Eye, Heart } from "lucide-react";
+import { Eye, Heart, X } from "lucide-react";
 import { useEffect, useState, useRef, Fragment } from "react";
 import axios from "axios";
 
@@ -32,16 +32,22 @@ const Reels = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const handleClosePopup = () => {
+    setPopUpToggle(false);
+    setSelectedVideo(null);
+    setVideoShow(false);
+    setIsPlaying(false);
+  };
+
   const getDetails = () => {
     axios
       .get(`http://localhost:3000/api/user/${id}`)
       .then((response) => {
         const data = response?.data.user_details;
-        console.log(data.posts);
-        setPosts(data.posts || 0);
+        setReels(data?.reels || []);
       })
       .catch((error) => {
-        alert(error?.response.data.error);
+        alert(error?.response?.data?.error || "Failed to fetch reels.");
       });
   };
 
@@ -66,7 +72,10 @@ const Reels = () => {
       }
     }, 1025);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
+    };
   }, [popUpToggle]);
 
   useEffect(() => {
@@ -74,27 +83,34 @@ const Reels = () => {
   }, []);
 
   return (
-    <>
-      {/* Modal */}
+    <div className="w-full flex flex-col items-center justify-center">
+      {/* Modal Popup */}
       <div
-        className={`fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${
-          popUpToggle ? "opacity-100" : "opacity-0 pointer-events-none"
+        className={`fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-slate-900/40 backdrop-blur-sm transition-opacity duration-200 ${
+          popUpToggle
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
-        onClick={() => {
-          setPopUpToggle(false);
-          setSelectedVideo(null);
-        }}
+        onClick={handleClosePopup}
       >
         <div
-          className="flex items-center w-full h-full max-w-6xl max-h-[85vh] border rounded-lg shadow-md bg-card-bg border-border-color overflow-hidden"
+          className="relative flex flex-col sm:flex-row items-center w-full max-w-4xl h-[85vh] max-h-175 border rounded-2xl shadow-2xl bg-white border-slate-200 overflow-hidden mx-4"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Left Side */}
-          <div className="h-full w-[40%] shrink-0">
+          {/* Close Button */}
+          <button
+            onClick={handleClosePopup}
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          {/* Left Side: Video Media Container */}
+          <div className="h-2/5 sm:h-full w-full sm:w-[45%] shrink-0 bg-slate-950 flex items-center justify-center">
             {videoShow ? (
               <video
                 ref={videoRef}
-                src={dummyVideo}
+                src={selectedVideo?.video || dummyVideo}
                 className="object-cover w-full h-full cursor-pointer"
                 loop
                 autoPlay
@@ -103,88 +119,81 @@ const Reels = () => {
               />
             ) : (
               <img
-                src={dummyImage}
-                alt="IMG"
-                className="object-cover w-full h-full rounded-l-lg"
+                src={selectedVideo?.thumbnail || dummyImage}
+                alt="Reel preview"
+                className="object-cover w-full h-full"
               />
             )}
           </div>
 
-          {/* Right Side */}
-          <div className="w-[60%] h-full pt-4 flex flex-col min-h-0">
-            {/* Profile */}
-            <div className="flex items-center gap-2.5 px-4 pb-3 border-b border-border-color shrink-0">
-              {/* Avatar */}
-              <div className="bg-black rounded-full shrink-0 w-11 h-11">
+          {/* Right Side: Details & Comments Area */}
+          <div className="w-full sm:w-[55%] h-3/5 sm:h-full pt-4 flex flex-col min-h-0 bg-white">
+            {/* Profile Header */}
+            <div className="flex items-center gap-3 px-5 pb-3 border-b border-slate-100 shrink-0">
+              <div className="bg-slate-100 rounded-full shrink-0 w-10 h-10 overflow-hidden ring-1 ring-slate-200">
                 <img
                   src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                  alt="IMG"
-                  className="object-cover w-full h-full rounded-full"
+                  alt="Avatar"
+                  className="object-cover w-full h-full"
                 />
               </div>
 
-              {/* Details */}
-              <div>
-                <h1 className="flex items-center gap-2 text-sm font-semibold tracking-wide">
-                  ahad.shk.0 <span>•</span>
+              <div className="flex-1 min-w-0">
+                <h1 className="flex items-center gap-2 text-sm font-semibold text-slate-900 truncate">
+                  ahad.shk.0
+                  <span className="text-slate-300">•</span>
                   <button
                     type="button"
-                    className="transition-colors hover:underline text-brand-accent hover:text-hover-blue"
+                    className="text-blue-600 hover:text-blue-700 font-semibold transition-colors hover:underline text-xs"
                   >
                     Follow
                   </button>
                 </h1>
-                <p className="text-xs tracking-wide text-subtext">
+                <p className="text-xs text-slate-500 truncate">
                   Original Audio — ahad.shk.0
                 </p>
               </div>
             </div>
 
-            {/* Comments Area */}
-            <div className="flex-1 min-h-0 px-4 py-3 overflow-y-auto scrollbar-thin">
-              {Array(30)
+            {/* Comments List Area */}
+            <div className="flex-1 min-h-0 px-5 py-4 overflow-y-auto space-y-4">
+              {Array(8)
                 .fill(null)
                 .map((_, i) => (
                   <Fragment key={i}>
-                    <div className="flex items-center">
-                      <div className="w-full">
-                        <div className="flex items-start justify-between w-full gap-3">
-                          <Link to={`/en/@ahad.shk.0`} className="shrink-0">
-                            <img
-                              src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                              alt="IMG"
-                              className="object-cover w-10 h-10 transition-all rounded-full ring-2 ring-transparent hover:ring-brand-accent"
-                            />
+                    <div className="flex items-start gap-3">
+                      <Link to={`/en/@ahad.shk.0`} className="shrink-0">
+                        <img
+                          src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                          alt="Commenter avatar"
+                          className="object-cover w-9 h-9 rounded-full ring-1 ring-slate-200 hover:ring-blue-600 transition-all"
+                        />
+                      </Link>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <Link
+                            to={`/en/@ahad.shk.0`}
+                            className="text-xs font-semibold text-slate-900 truncate hover:underline"
+                          >
+                            @ahad.shk.0
                           </Link>
+                        </div>
 
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-wrap items-baseline gap-2">
-                              <Link
-                                to={`/en/@ahad.shk.0`}
-                                className="text-sm font-semibold truncate text-heading-text hover:underline"
-                              >
-                                @ahad.shk.0
-                              </Link>
-                            </div>
+                        <p className="mt-1 text-sm text-slate-700 leading-snug wrap-break-word">
+                          Hello World
+                        </p>
 
-                            <p className="mt-1 text-sm leading-relaxed text-body-text wrap-break-word">
-                              Hello World
-                            </p>
-
-                            <div className="flex items-center gap-4 mt-2 text-xs text-body-text/80">
-                              12.1K likes
-                            </div>
-                          </div>
-
-                          <div className="pt-1 text-body-text/60">
-                            <button className="transition-colors hover:text-red-500">
-                              <Heart className="w-4 h-4" />
-                            </button>
-                          </div>
+                        <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+                          <span>12.1K likes</span>
                         </div>
                       </div>
+
+                      <button className="text-slate-400 hover:text-red-500 transition-colors p-1">
+                        <Heart className="w-4 h-4" />
+                      </button>
                     </div>
-                    <hr className="my-3 rounded-full border-border-color" />
+                    <div className="border-b border-slate-100 my-2" />
                   </Fragment>
                 ))}
             </div>
@@ -192,40 +201,47 @@ const Reels = () => {
         </div>
       </div>
 
-      {/* Content Grid */}
-      {reels?.length > 0 ? (
-        <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
-          {reels.map((_, i) => (
-            <div key={i} className="relative w-full h-full group">
+      {/* Reels Content Grid */}
+      {reels && reels.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full">
+          {reels.map((reel, i) => (
+            <div
+              key={reel?.id || i}
+              className="relative aspect-9/16 w-full cursor-pointer rounded-xl overflow-hidden group border border-slate-200 bg-slate-100"
+              onClick={() => {
+                setSelectedVideo(reel);
+                setPopUpToggle(true);
+              }}
+            >
               <img
-                src={dummyImage}
-                alt="IMG"
-                className="object-cover w-full h-full rounded-md"
+                src={reel?.thumbnail || dummyImage}
+                alt="Reel thumbnail"
+                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
               />
-              <div
-                onClick={() => setPopUpToggle(!popUpToggle)}
-                className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full gap-3 transition-all duration-200 rounded-md opacity-0 cursor-pointer bg-black/50 group-hover:opacity-100"
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Eye color="#fff" />
-                  <span className="font-semibold text-white">1.8K</span>
+
+              {/* Hover Overlay with Stats */}
+              <div className="absolute inset-0 z-10 flex items-center justify-center gap-6 opacity-0 group-hover:opacity-100 bg-slate-900/40 backdrop-blur-[2px] transition-opacity duration-200">
+                <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                  <Eye className="w-5 h-5" />
+                  <span>{reel?.views || "1.8K"}</span>
                 </div>
-                <div className="flex items-center justify-center gap-2">
-                  <Heart color="#fff" fill="#fff" />
-                  <span className="font-semibold text-white">1.8K</span>
+                <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                  <Heart className="w-5 h-5 fill-white" />
+                  <span>{reel?.likes || "1.8K"}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div>
-          <p className="text-sm text-subtext">
+        /* Empty State */
+        <div className="py-12 text-center">
+          <p className="text-sm font-medium text-slate-500">
             You haven't created any reels yet.
           </p>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

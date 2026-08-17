@@ -183,7 +183,7 @@ const AuthenticationPage = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-6">
+    <div className="flex items-center justify-center min-h-screen px-4 sm:px-6 bg-app-bg text-body-text selection:bg-brand-accent selection:text-white">
       {/* Toaster */}
       <ToastContainer
         autoClose={1500}
@@ -195,13 +195,13 @@ const AuthenticationPage = () => {
       />
 
       {/* Form Card */}
-      <div className="w-full max-w-md px-6 py-6 bg-white shadow-xl rounded-xl">
+      <div className="w-full max-w-md px-8 py-8 bg-card-bg border border-border-color shadow-xl shadow-slate-200/50 rounded-2xl transition-all duration-300">
         {/* Form Heading */}
-        <div className="mb-5 text-center">
-          <h1 className="text-3xl font-black tracking-tight text-heading-text">
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-extrabold tracking-tight text-heading-text">
             Confession<span className="text-brand-accent">Talks</span>
           </h1>
-          <p className="mt-1 text-sm text-subtext">
+          <p className="mt-1.5 text-sm font-medium text-subtext">
             {login
               ? "Login to continue chatting!"
               : "Create an account to join conversations"}
@@ -211,7 +211,7 @@ const AuthenticationPage = () => {
         {/* Form */}
         <div>
           <form
-            className="space-y-2.5"
+            className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
               handleSubmit();
@@ -262,7 +262,7 @@ const AuthenticationPage = () => {
 
             {/* CheckBoxes */}
             {!login && (
-              <div className="flex flex-col gap-2 pt-1">
+              <div className="flex flex-col gap-2.5 pt-1">
                 {/* Remember Me */}
                 <div className="flex items-center gap-2.5">
                   <input
@@ -271,36 +271,36 @@ const AuthenticationPage = () => {
                     id="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleInputChange}
-                    className="checkbox shrink-0 mt-0.5"
+                    className="checkbox"
                   />
                   <label
                     htmlFor="rememberMe"
-                    className="text-xs font-normal leading-tight cursor-pointer select-none text-subtext"
+                    className="text-xs font-medium cursor-pointer select-none text-subtext hover:text-body-text transition-colors"
                   >
                     Remember me for 1 week
                   </label>
                 </div>
 
                 {/* Terms and Policies */}
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-start gap-2.5">
                   <input
                     type="checkbox"
                     name="terms"
                     id="terms"
                     checked={formData.terms}
                     onChange={handleInputChange}
-                    className="checkbox shrink-0 mt-0.5"
+                    className="checkbox"
                   />
                   <label
                     htmlFor="terms"
-                    className="text-xs font-normal leading-tight cursor-pointer select-none text-subtext"
+                    className="text-xs font-medium leading-normal cursor-pointer select-none text-subtext"
                   >
                     You agree to the{" "}
-                    <span className="text-brand-accent">
+                    <span className="font-semibold text-brand-accent hover:underline">
                       <Link to={"/policies"}>terms</Link>
                     </span>{" "}
                     and{" "}
-                    <span className="text-brand-accent">
+                    <span className="font-semibold text-brand-accent hover:underline">
                       <Link to={"/policies"}>policies</Link>{" "}
                     </span>{" "}
                     of ConfessionTalks
@@ -312,9 +312,10 @@ const AuthenticationPage = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full mt-4! flex items-center justify-center gap-2 py-2.5 px-4 bg-brand-accent hover:bg-hover-blue active:bg-blue-800 text-white text-base font-medium rounded-lg shadow-md shadow-indigo-200 hover:shadow-lg transition duration-200"
+              disabled={loading}
+              className="w-full mt-6 flex items-center justify-center gap-2 py-3 px-4 bg-brantext-brand-accent hover:bg-hover-blue active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
             >
-              {loading && <RotateCw className="animate-spin" />}
+              {loading && <RotateCw className="w-4 h-4 animate-spin" />}
               {loading
                 ? login
                   ? "Signing you in..."
@@ -327,10 +328,14 @@ const AuthenticationPage = () => {
           </form>
 
           {/* SignUp Switching */}
-          <p className="mt-4 text-xs font-medium text-center text-subtext">
+          <p className="mt-6 text-xs font-medium text-center text-subtext">
             {login ? "Don't have an account?" : "Already have an account?"}{" "}
-            <span className="transition-colors text-brand-accent hover:text-hover-blue">
-              <button type="button" onClick={() => setLogin(!login)}>
+            <span className="font-semibold text-brand-accent hover:text-hoverbg-hover-blue transition-colors">
+              <button
+                type="button"
+                onClick={() => setLogin(!login)}
+                className="hover:underline cursor-pointer focus:outline-hidden"
+              >
                 {login ? "Sign Up" : "Sign In"}
               </button>
             </span>
