@@ -3,16 +3,49 @@ import dummyVideo from "../../assets/sample2.mp4";
 import { Link } from "react-router-dom";
 import { Eye, Heart } from "lucide-react";
 import { useEffect, useState, useRef, Fragment } from "react";
+import axios from "axios";
 
 const Reels = () => {
+  // ---- UseStates ----
   const [popUpToggle, setPopUpToggle] = useState(false);
   const [videoShow, setVideoShow] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [reels, setReels] = useState(null);
 
-  // Added ref for video element
+  // ---- UseRefs ----
   const videoRef = useRef(null);
 
+  // ---- Variables ----
+  const id = localStorage.getItem("cota_id");
+
+  // ---- Functions ----
+  const togglePlayPause = () => {
+    if (!videoRef.current) return;
+
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const getDetails = () => {
+    axios
+      .get(`http://localhost:3000/api/user/${id}`)
+      .then((response) => {
+        const data = response?.data.user_details;
+        console.log(data.posts);
+        setPosts(data.posts || 0);
+      })
+      .catch((error) => {
+        alert(error?.response.data.error);
+      });
+  };
+
+  // ---- UseEffects ----
   useEffect(() => {
     let timer;
     let timer2;
@@ -36,16 +69,9 @@ const Reels = () => {
     return () => clearTimeout(timer);
   }, [popUpToggle]);
 
-  const togglePlayPause = () => {
-    if (!videoRef.current) return;
-
-    if (isPlaying) {
-      videoRef.current.pause();
-    } else {
-      videoRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
-  };
+  useEffect(() => {
+    getDetails();
+  }, []);
 
   return (
     <>
@@ -54,7 +80,10 @@ const Reels = () => {
         className={`fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${
           popUpToggle ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
-        onClick={() => setPopUpToggle(false)}
+        onClick={() => {
+          setPopUpToggle(false);
+          setSelectedVideo(null);
+        }}
       >
         <div
           className="flex items-center w-full h-full max-w-6xl max-h-[85vh] border rounded-lg shadow-md bg-card-bg border-border-color overflow-hidden"
@@ -164,10 +193,9 @@ const Reels = () => {
       </div>
 
       {/* Content Grid */}
-      <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
-        {Array(9)
-          .fill(null)
-          .map((_, i) => (
+      {reels?.length > 0 ? (
+        <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
+          {reels.map((_, i) => (
             <div key={i} className="relative w-full h-full group">
               <img
                 src={dummyImage}
@@ -189,7 +217,14 @@ const Reels = () => {
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      ) : (
+        <div>
+          <p className="text-sm text-subtext">
+            You haven't created any reels yet.
+          </p>
+        </div>
+      )}
     </>
   );
 };

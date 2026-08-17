@@ -70,6 +70,7 @@ const PersonalProfile = () => {
     ? userData.following.length
     : Object.keys(userData?.following || {}).length;
 
+  // ---- UseEffects ----
   useEffect(() => {
     getDetails();
   }, []);
@@ -158,7 +159,7 @@ const PersonalProfile = () => {
       </div>
 
       {/* Navigation Tabs */}
-      {/* <div className="flex items-center justify-between w-full gap-3 border-b-2 border-b-border-color">
+      <div className="flex items-center justify-between w-full gap-3 border-b-2 border-b-border-color">
         {navigation_tabs.map((tab) => (
           <div
             onClick={() => setTabToggle(tab.key)}
@@ -169,10 +170,10 @@ const PersonalProfile = () => {
             <span>{tab.label}</span>
           </div>
         ))}
-      </div> */}
+      </div>
 
       {/* Content */}
-      {/* <div className="mt-3">
+      <div className="mt-3">
         {tabToggle === "posts" ? (
           <Posts />
         ) : tabToggle === "reels" ? (
@@ -182,7 +183,7 @@ const PersonalProfile = () => {
         ) : (
           ""
         )}
-      </div> */}
+      </div>
     </div>
   );
 };

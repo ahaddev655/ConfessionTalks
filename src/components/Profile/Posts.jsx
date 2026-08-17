@@ -1,10 +1,37 @@
 import dummyImage from "../../assets/Screenshot 2026-08-11 225421.png";
 import { Link } from "react-router-dom";
 import { Eye, Heart } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Posts = () => {
+  // ---- UseStates ----
   const [popUpToggle, setPopUpToggle] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [posts, setPosts] = useState(null);
+
+  // ---- Variables ----
+  const id = localStorage.getItem("cota_id");
+
+  // ---- Functions ----
+  const getDetails = () => {
+    axios
+      .get(`http://localhost:3000/api/user/${id}`)
+      .then((response) => {
+        const data = response?.data.user_details;
+        console.log(data.posts);
+        setPosts(data.posts || 0);
+      })
+      .catch((error) => {
+        alert(error?.response.data.error);
+      });
+  };
+
+  // ---- UseEffects ----
+  useEffect(() => {
+    getDetails();
+  }, []);
+
   return (
     <>
       {/* Modal */}
@@ -12,7 +39,10 @@ const Posts = () => {
         className={`fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${
           popUpToggle ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
-        onClick={() => setPopUpToggle(false)}
+        onClick={() => {
+          setPopUpToggle(false);
+          setSelectedPost(null);
+        }}
       >
         <div
           className="flex items-center w-full h-full max-w-6xl max-h-[85vh] border rounded-lg shadow-md bg-card-bg border-border-color overflow-hidden"
@@ -21,7 +51,7 @@ const Posts = () => {
           {/* Left Side */}
           <div className="h-full w-[40%] shrink-0">
             <img
-              src={dummyImage}
+              src={selectedPost?.post}
               alt="IMG"
               className="object-cover w-full h-full rounded-l-lg"
             />
@@ -43,7 +73,7 @@ const Posts = () => {
               {/* Details */}
               <div>
                 <h1 className="flex items-center gap-2 text-sm font-semibold tracking-wide">
-                  ahad.shk.0 <span>•</span>
+                  {selectedPost?.userName} <span>•</span>
                   <button
                     type="button"
                     className="transition-colors hover:underline text-brand-accent hover:text-hover-blue"
@@ -52,7 +82,7 @@ const Posts = () => {
                   </button>
                 </h1>
                 <p className="text-xs tracking-wide text-subtext">
-                  Original Audio — ahad.shk.0
+                  Original Audio — {selectedPost?.userName}
                 </p>
               </div>
             </div>
@@ -168,32 +198,45 @@ const Posts = () => {
       </div>
 
       {/* Content */}
-      <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
-        {Array(9)
-          .fill()
-          .map((_, i) => (
+      {posts?.length > 0 ? (
+        <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
+          {posts.map((post, i) => (
             <div className="relative w-full h-full group">
               <img
-                src={dummyImage}
+                src={post?.post || ""}
                 alt="IMG"
                 className="object-cover w-full h-full rounded-md"
               />
               <div
-                onClick={() => setPopUpToggle(!popUpToggle)}
+                onClick={() => {
+                  setPopUpToggle(!popUpToggle);
+                  setSelectedPost(post);
+                }}
                 className="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full gap-3 transition-all duration-200 rounded-md opacity-0 cursor-pointer bg-black/50 group-hover:opacity-100"
               >
                 <div className="flex items-center justify-center gap-2">
                   <Eye color="#fff" />
-                  <span className="font-semibold text-white">1.8K</span>
+                  <span className="font-semibold text-white">
+                    {post?.views}
+                  </span>
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <Heart color="#fff" fill="#fff" />
-                  <span className="font-semibold text-white">1.8K</span>
+                  <span className="font-semibold text-white">
+                    {post?.likes}
+                  </span>
                 </div>
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      ) : (
+        <div>
+          <p className="text-sm text-subtext">
+            You haven't shared any posts yet.
+          </p>
+        </div>
+      )}
     </>
   );
 };

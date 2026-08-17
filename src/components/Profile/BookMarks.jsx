@@ -17,6 +17,7 @@ const formatCount = (count) => {
 const BookMarks = () => {
   // ---- UseStates ----
   const [selectedVideo, setSelectedVideo] = useState(null);
+  // const [selectedItem, setSelectedItem] = useState(null);
   const [popUpToggle, setPopUpToggle] = useState(false);
   const [videoShow, setVideoShow] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,64 +26,6 @@ const BookMarks = () => {
 
   // ---- Refs ----
   const videoRef = useRef(null);
-
-  // ---- Arrays ----
-  const bookmarksList = [
-    {
-      id: 1,
-      thumbnail: DummyImage,
-      description: "Hello World",
-      type: "post",
-      views: 128000,
-      likes: 129000,
-      user_details: {
-        id: 1,
-        username: "ahad.shk.0",
-        avatar:
-          "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
-      },
-      comments: [
-        {
-          id: 1,
-          user: {
-            username: "ahad.shk.0",
-            avatar:
-              "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
-          },
-          comment: "Hello, Nice Post",
-        },
-      ],
-    },
-    {
-      id: 2,
-      thumbnail: DummyImage,
-      video: DummyVideo,
-      description: "Hello World",
-      type: "video",
-      views: 128000,
-      likes: 129000,
-      user_details: {
-        id: 1,
-        username: "ahad.shk.0",
-        avatar:
-          "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
-      },
-      comments: [
-        {
-          id: 1,
-          user: {
-            username: "ahad.shk.0",
-            avatar:
-              "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
-          },
-          comment: "Hello, Nice Post",
-        },
-      ],
-    },
-  ];
-
-  // ---- Derived Data ----
-  const comments = selectedVideo?.comments || [];
 
   // ---- Functions ----
   const togglePlayPause = () => {
@@ -126,7 +69,6 @@ const BookMarks = () => {
     };
   }, [popUpToggle, selectedVideo]);
 
-  // Effect to reset video player time when modal closes
   useEffect(() => {
     if (!popUpToggle && videoRef.current) {
       videoRef.current.pause();
@@ -252,33 +194,41 @@ const BookMarks = () => {
       </div>
 
       {/* Content */}
-      <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
-        {bookmarksList.map((item) => (
-          <div
-            key={item.id}
-            className="relative w-full h-full cursor-pointer"
-            onClick={() => {
-              setSelectedVideo(item);
-              setPopUpToggle(true);
-            }}
-          >
-            <img
-              src={item.thumbnail}
-              alt="IMG"
-              className="object-cover w-full h-full rounded-md"
-            />
+      {bookmarks?.length > 0 ? (
+        <div className="grid gap-1 md:grid-cols-3 sm:grid-cols-2">
+          {bookmarksList.map((item) => (
+            <div
+              key={item.id}
+              className="relative w-full h-full cursor-pointer"
+              onClick={() => {
+                setSelectedItem(item);
+                setPopUpToggle(true);
+              }}
+            >
+              <img
+                src={item.thumbnail}
+                alt="IMG"
+                className="object-cover w-full h-full rounded-md"
+              />
 
-            {/* Type Icon */}
-            <div className="absolute top-3 right-3">
-              {item.video ? (
-                <AiFillPlaySquare fill="white" size={30} />
-              ) : (
-                <HiSquare2Stack size={30} fill="white" />
-              )}
+              {/* Type Icon */}
+              <div className="absolute top-3 right-3">
+                {item.video ? (
+                  <AiFillPlaySquare fill="white" size={30} />
+                ) : (
+                  <HiSquare2Stack size={30} fill="white" />
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div>
+          <p className="text-sm text-subtext">
+            You haven't saved any posts or reels yet.
+          </p>
+        </div>
+      )}
     </>
   );
 };
