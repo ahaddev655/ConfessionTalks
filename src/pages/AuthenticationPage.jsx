@@ -195,7 +195,7 @@ const AuthenticationPage = () => {
       />
 
       {/* Form Card */}
-      <div className="w-full max-w-md px-8 py-8 bg-card-bg border border-border-color shadow-xl shadow-slate-200/50 rounded-2xl transition-all duration-300">
+      <div className="w-full max-w-md px-8 py-8 transition-all duration-300 border shadow-xl bg-card-bg border-border-color shadow-slate-200/50 rounded-2xl">
         {/* Form Heading */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-extrabold tracking-tight text-heading-text">
@@ -275,7 +275,7 @@ const AuthenticationPage = () => {
                   />
                   <label
                     htmlFor="rememberMe"
-                    className="text-xs font-medium cursor-pointer select-none text-subtext hover:text-body-text transition-colors"
+                    className="text-xs font-medium transition-colors cursor-pointer select-none text-subtext hover:text-body-text"
                   >
                     Remember me for 1 week
                   </label>
@@ -330,11 +330,11 @@ const AuthenticationPage = () => {
           {/* SignUp Switching */}
           <p className="mt-6 text-xs font-medium text-center text-subtext">
             {login ? "Don't have an account?" : "Already have an account?"}{" "}
-            <span className="font-semibold text-brand-accent hover:text-hoverbg-hover-blue transition-colors">
+            <span className="font-semibold transition-colors text-brand-accent hover:text-hoverbg-hover-blue">
               <button
                 type="button"
                 onClick={() => setLogin(!login)}
-                className="hover:underline cursor-pointer focus:outline-hidden"
+                className="cursor-pointer hover:underline focus:outline-hidden"
               >
                 {login ? "Sign Up" : "Sign In"}
               </button>

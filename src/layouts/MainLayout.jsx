@@ -12,33 +12,33 @@ const MainLayout = () => {
   const navigate = useNavigate();
 
   // ---- UseStates ----
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // ---- UseEffects ----
-  useEffect(() => {
-    if (!id || id === null) {
-      toast.error("ID not found");
-      setTimeout(() => {
-        navigate("/");
-      }, 2500);
-      return;
-    }
-    axios
-      .get(`http://localhost:3000/api/auth/verify/${id}`, {
-        withCredentials: true,
-      })
-      .then((response) => {
-        setTimeout(() => {
-          setLoading(false);
-        }, 2500);
-      })
-      .catch((error) => {
-        toast.error(error?.response?.data.error || "Internal Server Error");
-        setTimeout(() => {
-          navigate("/");
-        }, 2500);
-      });
-  }, []);
+  // useEffect(() => {
+  //   if (!id || id === null) {
+  //     toast.error("ID not found");
+  //     setTimeout(() => {
+  //       navigate("/");
+  //     }, 2500);
+  //     return;
+  //   }
+  //   axios
+  //     .get(`http://localhost:3000/api/auth/verify/${id}`, {
+  //       withCredentials: true,
+  //     })
+  //     .then((response) => {
+  //       setTimeout(() => {
+  //         setLoading(false);
+  //       }, 2500);
+  //     })
+  //     .catch((error) => {
+  //       toast.error(error?.response?.data.error || "Internal Server Error");
+  //       setTimeout(() => {
+  //         navigate("/");
+  //       }, 2500);
+  //     });
+  // }, []);
 
   return (
     <>
@@ -57,14 +57,14 @@ const MainLayout = () => {
 
           {/* Right Column: Main Content + Footer */}
           <div className="flex flex-col flex-1 h-screen min-w-0 overflow-auto">
-            <main className="flex-1 w-full max-w-7xl p-6">
+            <main className="flex-1 w-full p-6 max-w-7xl">
               <Outlet />
             </main>
             <MainFooter />
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center h-screen w-screen bg-slate-950">
+        <div className="flex items-center justify-center w-screen h-screen bg-slate-950">
           <div className="flex items-center gap-3">
             <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
             <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]" />

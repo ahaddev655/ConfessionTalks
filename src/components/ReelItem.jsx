@@ -124,7 +124,7 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
           >
             <MessageCircle
               size={28}
-              className="text-white group-hover:text-slate-200 transition-colors"
+              className="text-white transition-colors group-hover:text-slate-200"
             />
             <span className="mt-1 text-xs font-semibold">
               {allComments.length}
@@ -134,7 +134,7 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
           <button className="flex flex-col items-center group">
             <Share2
               size={28}
-              className="text-white group-hover:text-slate-200 transition-colors"
+              className="text-white transition-colors group-hover:text-slate-200"
             />
             <span className="mt-1 text-xs font-medium">Share</span>
           </button>
@@ -154,12 +154,12 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
             <span className="text-sm font-semibold truncate">
               @{video?.user?.username || "user"}
             </span>
-            <button className="px-3 py-1 text-xs font-semibold border rounded-full bg-white/20 backdrop-blur-sm border-white/40 hover:bg-white/30 transition-colors shrink-0">
+            <button className="px-3 py-1 text-xs font-semibold transition-colors border rounded-full bg-white/20 backdrop-blur-sm border-white/40 hover:bg-white/30 shrink-0">
               Follow
             </button>
           </div>
 
-          <div className="mb-2 max-h-28 overflow-y-auto scrollbar-none">
+          <div className="mb-2 overflow-y-auto max-h-28 scrollbar-none">
             <p
               className={`text-sm text-slate-200 leading-snug wrap-break-word ${
                 !isExpanded ? "line-clamp-2" : ""
@@ -170,7 +170,7 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
             {video?.description?.length > 85 && (
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-1 text-xs font-semibold text-slate-400 underline hover:text-white transition-colors"
+                className="mt-1 text-xs font-semibold underline transition-colors text-slate-400 hover:text-white"
               >
                 {isExpanded ? "less" : "more"}
               </button>
@@ -201,7 +201,7 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
         {/* Comments Modal Popup */}
         {commentsToggle && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-200"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-200 bg-slate-900/40 backdrop-blur-sm"
             onClick={() => setCommentsToggle(false)}
           >
             <div
@@ -239,17 +239,17 @@ const ReelItem = ({ video, isMuted, toggleMute }) => {
                             "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
                           }
                           alt={comment?.user?.username || "Commenter avatar"}
-                          className="object-cover w-9 h-9 rounded-full ring-1 ring-slate-200 hover:ring-blue-600 transition-all"
+                          className="object-cover transition-all rounded-full w-9 h-9 ring-1 ring-slate-200 hover:ring-blue-600"
                         />
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link
                           to={`/en/@${comment?.user?.username}`}
-                          className="text-xs font-semibold text-slate-900 hover:underline truncate block"
+                          className="block text-xs font-semibold truncate text-slate-900 hover:underline"
                         >
                           @{comment?.user?.username || "user"}
                         </Link>
-                        <p className="mt-1 text-sm text-slate-700 leading-snug wrap-break-word">
+                        <p className="mt-1 text-sm leading-snug text-slate-700 wrap-break-word">
                           {comment.comment}
                         </p>
                       </div>

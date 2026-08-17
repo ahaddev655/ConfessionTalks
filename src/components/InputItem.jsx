@@ -59,7 +59,7 @@ const InputComp = ({
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute right-3 text-gray-400 hover:text-body-text transition-colors focus:outline-none cursor-pointer"
+            className="absolute text-gray-400 transition-colors cursor-pointer right-3 hover:text-body-text focus:outline-none"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (

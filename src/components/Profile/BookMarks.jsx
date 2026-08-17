@@ -87,7 +87,7 @@ const BookMarks = () => {
   }, [popUpToggle]);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center w-full">
       {/* Modal Popup */}
       <div
         className={`fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-slate-900/40 backdrop-blur-sm transition-opacity duration-200 ${
@@ -136,7 +136,7 @@ const BookMarks = () => {
               <div className="w-full sm:w-[55%] h-3/5 sm:h-full pt-4 flex flex-col min-h-0 bg-white">
                 {/* Header Profile Bar */}
                 <div className="flex items-center gap-3 px-5 pb-3 border-b border-slate-100 shrink-0">
-                  <div className="bg-slate-100 rounded-full shrink-0 w-10 h-10 overflow-hidden ring-1 ring-slate-200">
+                  <div className="w-10 h-10 overflow-hidden rounded-full bg-slate-100 shrink-0 ring-1 ring-slate-200">
                     <img
                       src={
                         selectedVideo?.user_details?.avatar ||
@@ -148,17 +148,17 @@ const BookMarks = () => {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h1 className="flex items-center gap-2 text-sm font-semibold text-slate-900 truncate">
+                    <h1 className="flex items-center gap-2 text-sm font-semibold truncate text-slate-900">
                       {selectedVideo?.user_details?.username || "ahad.shk.0"}
                       <span className="text-slate-300">•</span>
                       <button
                         type="button"
-                        className="text-blue-600 hover:text-blue-700 font-semibold transition-colors hover:underline text-xs"
+                        className="text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700 hover:underline"
                       >
                         Follow
                       </button>
                     </h1>
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="text-xs truncate text-slate-500">
                       Original Audio —{" "}
                       {selectedVideo?.user_details?.username || "ahad.shk.0"}
                     </p>
@@ -166,7 +166,7 @@ const BookMarks = () => {
                 </div>
 
                 {/* Comments List Area */}
-                <div className="flex-1 min-h-0 px-5 py-4 overflow-y-auto space-y-4">
+                <div className="flex-1 min-h-0 px-5 py-4 space-y-4 overflow-y-auto">
                   {comments.map((commentItem, i) => (
                     <Fragment key={i}>
                       <div className="flex items-start gap-3">
@@ -174,7 +174,7 @@ const BookMarks = () => {
                           <img
                             src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
                             alt="User avatar"
-                            className="object-cover w-9 h-9 rounded-full ring-1 ring-slate-200 hover:ring-blue-600 transition-all"
+                            className="object-cover transition-all rounded-full w-9 h-9 ring-1 ring-slate-200 hover:ring-blue-600"
                           />
                         </Link>
 
@@ -182,13 +182,13 @@ const BookMarks = () => {
                           <div className="flex items-center gap-2">
                             <Link
                               to={`/en/@ahad.shk.0`}
-                              className="text-xs font-semibold text-slate-900 truncate hover:underline"
+                              className="text-xs font-semibold truncate text-slate-900 hover:underline"
                             >
                               @{commentItem.user}
                             </Link>
                           </div>
 
-                          <p className="mt-1 text-sm text-slate-700 leading-snug wrap-break-word">
+                          <p className="mt-1 text-sm leading-snug text-slate-700 wrap-break-word">
                             {commentItem.comment}
                           </p>
 
@@ -197,11 +197,11 @@ const BookMarks = () => {
                           </div>
                         </div>
 
-                        <button className="text-slate-400 hover:text-red-500 transition-colors p-1">
+                        <button className="p-1 transition-colors text-slate-400 hover:text-red-500">
                           <Heart className="w-4 h-4" />
                         </button>
                       </div>
-                      <div className="border-b border-slate-100 my-2" />
+                      <div className="my-2 border-b border-slate-100" />
                     </Fragment>
                   ))}
                 </div>
@@ -213,11 +213,11 @@ const BookMarks = () => {
 
       {/* Bookmarks Grid / Empty State */}
       {bookmarks && bookmarks.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full">
+        <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-3">
           {bookmarks.map((item) => (
             <div
               key={item.id}
-              className="relative aspect-square w-full cursor-pointer rounded-xl overflow-hidden group border border-slate-200 bg-slate-100"
+              className="relative w-full overflow-hidden border cursor-pointer aspect-square rounded-xl group border-slate-200 bg-slate-100"
               onClick={() => {
                 setSelectedVideo(item);
                 setSelectedItem(item);
@@ -227,7 +227,7 @@ const BookMarks = () => {
               <img
                 src={item.thumbnail || DummyImage}
                 alt="Bookmark item"
-                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
 
               {/* Type Badge */}

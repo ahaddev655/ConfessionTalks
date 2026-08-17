@@ -7,7 +7,7 @@ const ErrorPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 bg-app-bg text-body-text selection:bg-brand-accent selection:text-white">
-      <div className="w-full max-w-md p-8 border shadow-xl shadow-slate-200/50 rounded-2xl bg-card-bg border-borderbg-border-color transition-all duration-300">
+      <div className="w-full max-w-md p-8 transition-all duration-300 border shadow-xl shadow-slate-200/50 rounded-2xl bg-card-bg border-borderbg-border-color">
         <div className="flex flex-col items-center justify-center text-center">
           {/* Visual Graphic Element */}
           <div className="flex items-center justify-center w-20 h-20 mb-5 rounded-full bg-brand-accent/10 text-brandbg-brand-accent">

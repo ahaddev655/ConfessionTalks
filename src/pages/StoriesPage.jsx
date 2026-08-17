@@ -102,13 +102,13 @@ const StoriesPage = () => {
   }, [currentIndex]);
 
   return (
-    <div className="relative flex items-center justify-center h-screen select-none bg-slate-950 overflow-hidden">
+    <div className="relative flex items-center justify-center h-screen overflow-hidden select-none bg-slate-950">
       {/* Top Left Close Button */}
-      <div className="absolute top-5 left-5 z-40">
+      <div className="absolute z-40 top-5 left-5">
         <button
           type="button"
           onClick={() => navigate("/en")}
-          className="p-2 rounded-full text-white/80 bg-slate-900/40 backdrop-blur-md hover:bg-slate-900/80 hover:text-white transition-all shadow-md"
+          className="p-2 transition-all rounded-full shadow-md text-white/80 bg-slate-900/40 backdrop-blur-md hover:bg-slate-900/80 hover:text-white"
           aria-label="Close stories"
         >
           <X size={22} />
@@ -160,7 +160,7 @@ const StoriesPage = () => {
 
           {/* Profile Details & Media Controls */}
           <div className="flex items-center justify-between mt-1">
-            <div className="flex items-center space-x-2 min-w-0">
+            <div className="flex items-center min-w-0 space-x-2">
               <img
                 src={
                   currentStory?.user?.avatar ||

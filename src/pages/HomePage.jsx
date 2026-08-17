@@ -13,6 +13,10 @@ import {
   Bookmark,
   Send,
   MoreHorizontal,
+  User,
+  TriangleAlert,
+  Link2,
+  CodeXml,
 } from "lucide-react";
 
 const formatCount = (count) => {
@@ -24,10 +28,11 @@ const formatCount = (count) => {
 };
 
 const HomePage = () => {
+  // ---- Variables ----
   const uname = "ahad.shk.0";
   const navigate = useNavigate();
 
-  // ---- Mock Data ----
+  // ---- Arrays ----
   const initialVideos = [
     {
       id: 1,
@@ -86,19 +91,54 @@ const HomePage = () => {
     },
   ];
 
-  // ---- Local UI States ----
+  const menuItems = [
+    {
+      id: "report",
+      label: "Report",
+      icon: TriangleAlert,
+      danger: true,
+      onClick: () => console.log("Report clicked"),
+    },
+    {
+      id: "follow",
+      label: "Follow",
+      icon: User,
+      onClick: () => console.log("Follow clicked"),
+    },
+    {
+      id: "favorites",
+      label: "Add to favorites",
+      icon: Heart,
+      onClick: () => console.log("Add to favorites clicked"),
+    },
+    {
+      id: "copy",
+      label: "Copy link",
+      icon: Link2,
+      onClick: () => console.log("Copy link clicked"),
+    },
+    {
+      id: "embed",
+      label: "Embed",
+      icon: CodeXml,
+      onClick: () => console.log("Embed clicked"),
+    },
+  ];
+
+  // ---- UseStates ----
   const [videos, setVideos] = useState(initialVideos);
   const [isMuted, setIsMuted] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [likedVideos, setLikedVideos] = useState({});
   const [savedVideos, setSavedVideos] = useState({});
   const [newComment, setNewComment] = useState("");
+  const [dropdownToggle, setDropdownToggle] = useState(false);
 
   // ---- Refs ----
   const scrollContainerRef = useRef(null);
   const videoRefs = useRef([]);
 
-  // ---- Handlers ----
+  // ---- Functions ----
   const handleScroll = (direction) => {
     if (scrollContainerRef.current) {
       const scrollAmount = scrollContainerRef.current.clientWidth * 0.75;
@@ -165,7 +205,7 @@ const HomePage = () => {
     setNewComment("");
   };
 
-  // ---- Auto-Play Observer ----
+  // ---- useEffects ----
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -190,7 +230,7 @@ const HomePage = () => {
   const currentComments = selectedVideo?.commentList || [];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 antialiased">
+    <div className="min-h-screen antialiased bg-slate-50 text-slate-800">
       {/* Comments Drawer / Modal */}
       <div
         className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${
@@ -222,7 +262,7 @@ const HomePage = () => {
           <div className="flex-1 p-5 space-y-4 overflow-y-auto">
             {currentComments.length > 0 ? (
               currentComments.map((comment) => (
-                <div key={comment.id} className="flex gap-3 items-start group">
+                <div key={comment.id} className="flex items-start gap-3 group">
                   <Link
                     to={`/en/@${comment.user.username}`}
                     className="shrink-0"
@@ -230,7 +270,7 @@ const HomePage = () => {
                     <img
                       src={comment.user.avatar}
                       alt={comment.user.username}
-                      className="w-9 h-9 rounded-full object-cover ring-1 ring-slate-200"
+                      className="object-cover rounded-full w-9 h-9 ring-1 ring-slate-200"
                     />
                   </Link>
                   <div className="flex-1 min-w-0">
@@ -245,18 +285,18 @@ const HomePage = () => {
                         {comment.timestamp || "12h"}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-slate-700 wrap-break-word leading-snug">
+                    <p className="mt-1 text-sm leading-snug text-slate-700 wrap-break-word">
                       {comment.comment}
                     </p>
                   </div>
-                  <button className="text-slate-400 hover:text-red-600 transition-colors p-1">
+                  <button className="p-1 transition-colors text-slate-400 hover:text-red-600">
                     <Heart className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-slate-500">
-                <MessageCircle className="w-10 h-10 mb-2 stroke-1 opacity-50" />
+              <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                <MessageCircle className="w-10 h-10 mb-2 opacity-50 stroke-1" />
                 <p className="text-sm">
                   No comments yet. Start the conversation!
                 </p>
@@ -267,7 +307,7 @@ const HomePage = () => {
           {/* Comment Input */}
           <form
             onSubmit={handleAddComment}
-            className="p-3 border-t border-slate-200 bg-slate-50 flex items-center gap-2"
+            className="flex items-center gap-2 p-3 border-t border-slate-200 bg-slate-50"
           >
             <input
               type="text"
@@ -288,12 +328,12 @@ const HomePage = () => {
       </div>
 
       {/* Main Feed Container */}
-      <main className="max-w-md mx-auto px-2 sm:px-4 py-6">
+      <main className="max-w-md px-2 py-6 mx-auto sm:px-4">
         {/* Stories Slider */}
-        <div className="relative group mb-8">
+        <div className="relative mb-8 group">
           <button
             onClick={() => handleScroll("left")}
-            className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-slate-100 text-slate-700 p-2 rounded-full shadow-md border border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            className="absolute z-10 p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -left-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100"
             aria-label="Scroll left"
           >
             <ChevronLeft size={18} />
@@ -301,7 +341,7 @@ const HomePage = () => {
 
           <div
             ref={scrollContainerRef}
-            className="flex items-center gap-3 overflow-x-auto scroll-smooth py-2 px-1 scrollbar-none"
+            className="flex items-center gap-3 px-1 py-2 overflow-x-auto scroll-smooth scrollbar-none"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {Array.from({ length: 10 }).map((_, index) => (
@@ -316,7 +356,7 @@ const HomePage = () => {
                     <img
                       src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
                       alt={`Story by ${uname}`}
-                      className="w-13 h-13 rounded-full object-cover"
+                      className="object-cover rounded-full w-13 h-13"
                     />
                   </div>
                 </div>
@@ -329,7 +369,7 @@ const HomePage = () => {
 
           <button
             onClick={() => handleScroll("right")}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-slate-100 text-slate-700 p-2 rounded-full shadow-md border border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            className="absolute z-10 p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -right-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100"
             aria-label="Scroll right"
           >
             <ChevronRight size={18} />
@@ -346,39 +386,81 @@ const HomePage = () => {
             return (
               <div
                 key={video.id}
-                className="relative bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm"
+                className="relative overflow-hidden bg-white border shadow-sm border-slate-200 rounded-3xl"
               >
                 {/* Header Profile Bar */}
                 <div className="flex items-center justify-between px-4 py-3 bg-white">
+                  {/* Left Side */}
                   <div className="flex items-center gap-2.5">
                     <img
                       src={video.user.avatar || "https://i.pravatar.cc/150"}
                       alt={video.user.username}
-                      className="w-8 h-8 rounded-full object-cover ring-1 ring-slate-200"
+                      className="object-cover w-8 h-8 rounded-full ring-1 ring-slate-200"
                     />
                     <span className="text-xs font-semibold text-slate-900">
                       @{video.user.username}
                     </span>
                   </div>
-                  <button className="text-slate-400 hover:text-slate-700 transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button>
+
+                  {/* Right Side */}
+                  <div className="relative">
+                    <button
+                      className="transition-colors text-slate-400 hover:text-slate-700"
+                      onClick={() => setDropdownToggle(!dropdownToggle)}
+                    >
+                      <MoreHorizontal className="w-5 h-5" />
+                    </button>
+
+                    {/* Dropdown */}
+                    {dropdownToggle && (
+                      <div className="absolute z-30 w-48 -left-41 top-8 py-1.5 bg-white border border-slate-200/80 rounded-xl shadow-xl backdrop-blur-md transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2">
+                        <div className="flex flex-col divide-y divide-slate-100">
+                          {menuItems.map((item) => {
+                            const Icon = item.icon;
+                            return (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={item.onClick}
+                                className={`flex items-center w-full px-3.5 py-2.5 text-xs font-medium transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg active:bg-slate-100/80 ${
+                                  item.danger
+                                    ? "text-red-600 hover:bg-red-50/80"
+                                    : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                                }`}
+                              >
+                                <Icon
+                                  size={16}
+                                  strokeWidth={2}
+                                  className={`mr-3 shrink-0 ${
+                                    item.danger
+                                      ? "text-red-500"
+                                      : "text-slate-500"
+                                  }`}
+                                />
+                                <span className="truncate">{item.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Media Container */}
-                <div className="relative aspect-9/16 max-h-150 w-full bg-slate-950">
+                <div className="relative w-full aspect-9/16 max-h-150 bg-slate-950">
                   <video
                     onClick={() => togglePlayPause(index)}
                     ref={(el) => (videoRefs.current[index] = el)}
                     src={video.video_url}
-                    className="w-full h-full object-cover cursor-pointer"
+                    className="object-cover w-full h-full cursor-pointer"
                     muted={isMuted}
                     loop
                     playsInline
                   />
 
                   {/* Gradient Mask for Overlay Text */}
-                  <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
+                  <div className="absolute inset-x-0 bottom-0 h-40 pointer-events-none bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
                   {/* Mute Toggle */}
                   <button
@@ -387,7 +469,7 @@ const HomePage = () => {
                       setIsMuted(!isMuted);
                     }}
                     type="button"
-                    className="absolute top-4 right-4 bg-slate-900/50 backdrop-blur-md hover:bg-slate-900/70 text-white p-2 rounded-full border border-white/20 transition-all z-10"
+                    className="absolute z-10 p-2 text-white transition-all border rounded-full top-4 right-4 bg-slate-900/50 backdrop-blur-md hover:bg-slate-900/70 border-white/20"
                     aria-label={isMuted ? "Unmute video" : "Mute video"}
                   >
                     {isMuted ? <VolumeOff size={16} /> : <Volume2 size={16} />}
@@ -395,8 +477,8 @@ const HomePage = () => {
 
                   {/* Description Overlay */}
                   {video.description && (
-                    <div className="absolute bottom-4 left-4 right-16 z-10 pointer-events-none">
-                      <p className="text-xs text-white line-clamp-2 leading-relaxed drop-shadow-sm">
+                    <div className="absolute z-10 pointer-events-none bottom-4 left-4 right-16">
+                      <p className="text-xs leading-relaxed text-white line-clamp-2 drop-shadow-sm">
                         {video.description}
                       </p>
                     </div>
@@ -433,7 +515,7 @@ const HomePage = () => {
                     >
                       <MessageCircle
                         size={20}
-                        className="group-hover:scale-110 transition-transform duration-200"
+                        className="transition-transform duration-200 group-hover:scale-110"
                       />
                       <span className="text-xs font-medium text-slate-700">
                         {formatCount(video.commentList?.length)}
@@ -445,7 +527,7 @@ const HomePage = () => {
                   <button
                     type="button"
                     onClick={() => toggleSave(video.id)}
-                    className="text-slate-600 hover:text-amber-500 transition-colors group"
+                    className="transition-colors text-slate-600 hover:text-amber-500 group"
                   >
                     <Bookmark
                       size={20}

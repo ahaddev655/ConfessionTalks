@@ -69,9 +69,9 @@ const ReelsPage = () => {
   };
 
   return (
-    <div className="relative flex items-center justify-center w-screen h-screen bg-slate-950 overflow-hidden">
+    <div className="relative flex items-center justify-center w-screen h-screen overflow-hidden bg-slate-950">
       {/* Top Left Back/Close Button with Smooth Hover Scaling */}
-      <div className="absolute top-5 left-5 z-40 transition-transform duration-200 hover:scale-105 active:scale-95">
+      <div className="absolute z-40 transition-transform duration-200 top-5 left-5 hover:scale-105 active:scale-95">
         <button
           type="button"
           onClick={() => navigate("/en")}
@@ -98,17 +98,17 @@ const ReelsPage = () => {
       </div>
 
       {/* Desktop Navigation Arrows with Hover Glow and Spring Transition */}
-      <div className="absolute z-30 hidden md:flex flex-col gap-3 -translate-y-1/2 right-6 top-1/2">
+      <div className="absolute z-30 flex-col hidden gap-3 -translate-y-1/2 md:flex right-6 top-1/2">
         <button
           onClick={() => scroll("up")}
-          className="p-3 text-white transition-all duration-200 ease-out rounded-full shadow-xl bg-slate-900/60 backdrop-blur-md hover:bg-slate-800 hover:scale-110 hover:border-white/20 border border-white/10 active:scale-90"
+          className="p-3 text-white transition-all duration-200 ease-out border rounded-full shadow-xl bg-slate-900/60 backdrop-blur-md hover:bg-slate-800 hover:scale-110 hover:border-white/20 border-white/10 active:scale-90"
           aria-label="Previous reel"
         >
           <ChevronUp size={22} />
         </button>
         <button
           onClick={() => scroll("down")}
-          className="p-3 text-white transition-all duration-200 ease-out rounded-full shadow-xl bg-slate-900/60 backdrop-blur-md hover:bg-slate-800 hover:scale-110 hover:border-white/20 border border-white/10 active:scale-90"
+          className="p-3 text-white transition-all duration-200 ease-out border rounded-full shadow-xl bg-slate-900/60 backdrop-blur-md hover:bg-slate-800 hover:scale-110 hover:border-white/20 border-white/10 active:scale-90"
           aria-label="Next reel"
         >
           <ChevronDown size={22} />

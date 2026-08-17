@@ -47,7 +47,7 @@ const PersonalProfile = () => {
         setUserData(response?.data.user_details);
       })
       .catch((error) => {
-        alert(error?.response?.data?.error || "Error fetching details");
+        // alert(error?.response?.data?.error || "Error fetching details");
       });
   };
 
@@ -62,30 +62,30 @@ const PersonalProfile = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 flex justify-center items-start">
+    <div className="flex items-start justify-center w-full px-4 py-10 bg-slate-50 sm:px-6 lg:px-8">
       {/* Centered Profile Container */}
-      <div className="w-full max-w-2xl flex flex-col items-center">
+      <div className="flex flex-col items-center w-full max-w-2xl">
         {/* Profile Card */}
-        <div className="w-full bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-6">
+        <div className="flex items-start w-full gap-6 p-6 bg-white border shadow-sm rounded-2xl border-slate-200">
           {/* Avatar Section */}
           <div className="shrink-0">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border border-slate-200 ring-2 ring-slate-100">
+            <div className="w-24 h-24 overflow-hidden border rounded-full sm:w-28 sm:h-28 border-slate-200 ring-2 ring-slate-100">
               <img
                 src={
                   userData?.profilePic ||
                   "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
                 }
                 alt={userData?.userName || "User profile"}
-                className="w-full h-full object-cover"
+                className="object-cover w-full h-full"
               />
             </div>
           </div>
 
           {/* Details Section */}
-          <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+          <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
             {/* Identity */}
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight truncate">
+              <h1 className="text-xl font-bold tracking-tight truncate sm:text-2xl text-slate-900">
                 {userData?.userName || "ahad.shk.0"}
               </h1>
               <p className="text-sm font-medium text-slate-500 mt-0.5">
@@ -94,7 +94,7 @@ const PersonalProfile = () => {
             </div>
 
             {/* Stats */}
-            <div className="my-4 flex items-center gap-6 border-y border-slate-100 py-3">
+            <div className="flex items-center gap-6 py-3 my-4 border-y border-slate-100">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-base font-bold text-slate-900">
                   {postsCount}
@@ -125,7 +125,7 @@ const PersonalProfile = () => {
 
             {/* Description */}
             {userData?.description ? (
-              <div className="text-sm text-slate-700 leading-relaxed">
+              <div className="text-sm leading-relaxed text-slate-700">
                 <p className={!isExpanded ? "line-clamp-2" : ""}>
                   {userData?.description}
                 </p>
@@ -133,14 +133,14 @@ const PersonalProfile = () => {
                   <button
                     type="button"
                     onClick={() => setIsExpanded(!isExpanded)}
-                    className="mt-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                    className="mt-1 text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700"
                   >
                     {isExpanded ? "Show less" : "Read more"}
                   </button>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-slate-400 italic">
+              <p className="text-sm italic text-slate-400">
                 No description available.
               </p>
             )}
@@ -148,7 +148,7 @@ const PersonalProfile = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="w-full flex items-center justify-between border-b border-slate-200 mt-8">
+        <div className="flex items-center justify-between w-full mt-8 border-b border-slate-200">
           {navigation_tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = tabToggle === tab.key;
@@ -171,7 +171,7 @@ const PersonalProfile = () => {
         </div>
 
         {/* Tab Content Area */}
-        <div className="w-full mt-6 flex justify-center">
+        <div className="flex justify-center w-full mt-6">
           {tabToggle === "posts" && <Posts />}
           {tabToggle === "reels" && <Reels />}
           {tabToggle === "saved" && <BookMarks />}

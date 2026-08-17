@@ -32,17 +32,17 @@ const MainSidebar = () => {
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-full h-screen sticky top-0 max-w-65 shrink-0 px-4 py-6 bg-primary-dark border-r border-white/10 shadow-xl select-none">
+    <aside className="sticky top-0 flex-col hidden w-full h-screen px-4 py-6 border-r shadow-xl select-none md:flex max-w-65 shrink-0 bg-primary-dark border-white/10">
       {/* Brand Header */}
       <div className="px-2 pb-5">
         <Link to="/en" className="block">
-          <h1 className="text-2xl font-black tracking-tight text-white whitespace-nowrap hover:opacity-90 transition-opacity">
+          <h1 className="text-2xl font-black tracking-tight text-white transition-opacity whitespace-nowrap hover:opacity-90">
             Confession<span className="text-brand-accent">Talks</span>
           </h1>
         </Link>
       </div>
 
-      <div className="w-full h-px bg-white/10 mb-4" />
+      <div className="w-full h-px mb-4 bg-white/10" />
 
       {/* Main Navigation Links */}
       <nav className="flex-1 space-y-1">
@@ -67,15 +67,15 @@ const MainSidebar = () => {
                 <>
                   {/* Left Accent Bar for Active State */}
                   {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-brand-accent rounded-r-full" />
+                    <span className="absolute left-0 w-1 h-5 -translate-y-1/2 rounded-r-full top-1/2 bg-brand-accent" />
                   )}
 
                   {isActive ? (
-                    <FilledIcon size={22} className="shrink-0 text-white" />
+                    <FilledIcon size={22} className="text-white shrink-0" />
                   ) : (
                     <Icon
                       size={22}
-                      className="shrink-0 text-subtext group-hover:text-white transition-colors"
+                      className="transition-colors shrink-0 text-subtext group-hover:text-white"
                     />
                   )}
 
@@ -90,7 +90,7 @@ const MainSidebar = () => {
       </nav>
 
       {/* Footer Section */}
-      <div className="pt-4 mt-auto border-t border-white/10 space-y-3">
+      <div className="pt-4 mt-auto space-y-3 border-t border-white/10">
         {/* Profile Card / Link */}
         <NavLink
           to="/en/profile"
@@ -104,16 +104,16 @@ const MainSidebar = () => {
             <img
               src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
               alt="User avatar"
-              className="w-9 h-9 rounded-full object-cover ring-2 ring-white/20 group-hover:ring-white/40 transition-all"
+              className="object-cover transition-all rounded-full w-9 h-9 ring-2 ring-white/20 group-hover:ring-white/40"
             />
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-primary-dark" />
           </div>
 
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-white truncate group-hover:text-white transition-colors">
+            <span className="text-sm font-semibold text-white truncate transition-colors group-hover:text-white">
               Ahad Shaikh
             </span>
-            <span className="text-xs text-subtext truncate">
+            <span className="text-xs truncate text-subtext">
               @ahad.shk.0
             </span>
           </div>
