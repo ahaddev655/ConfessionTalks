@@ -2,13 +2,37 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { PiHouse, PiHouseFill } from "react-icons/pi";
 import { LuSquarePlay } from "react-icons/lu";
 import { AiFillPlaySquare } from "react-icons/ai";
-import { IoChatbubbleOutline, IoChatbubbleSharp } from "react-icons/io5";
+import {
+  IoChatbubbleOutline,
+  IoChatbubbleSharp,
+  IoSettingsOutline,
+  IoSettingsSharp,
+} from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
+import {
+  Menu,
+  Settings,
+  Moon,
+  Bookmark,
+  LogOut,
+  ShieldAlert,
+} from "lucide-react";
+import { useState } from "react";
 
 const MainSidebar = () => {
+  // ---- Variables ----
   const navigate = useNavigate();
 
-  // Navigation Items
+  // ---- UseStates ----
+  const [toggle, setToggle] = useState(false);
+
+  // ---- Functions ----
+  const handleLogout = () => {
+    localStorage.removeItem("ct_id");
+    navigate("/");
+  };
+
+  // ---- Navigation Items ----
   const links = [
     { path: "/en", icon: PiHouse, filledIcon: PiHouseFill, label: "Home" },
     {
@@ -25,11 +49,33 @@ const MainSidebar = () => {
     },
   ];
 
-  // Log Out Handler
-  const handleLogout = () => {
-    localStorage.removeItem("ct_id");
-    navigate("/");
-  };
+  const dropdownItems = [
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      onClick: () => navigate("/en/settings"),
+    },
+    {
+      id: "saved",
+      label: "Saved",
+      icon: Bookmark,
+      onClick: () => console.log("Saved clicked"),
+    },
+    {
+      id: "report",
+      label: "Report a Problem",
+      icon: ShieldAlert,
+      onClick: () => console.log("Report clicked"),
+    },
+    {
+      id: "logout",
+      label: "Log Out",
+      icon: LogOut,
+      danger: true,
+      onClick: handleLogout,
+    },
+  ];
 
   return (
     <aside className="sticky top-0 flex-col hidden w-full h-screen px-4 py-6 border-r shadow-xl select-none md:flex max-w-65 shrink-0 bg-primary-dark border-white/10">
@@ -87,6 +133,55 @@ const MainSidebar = () => {
             </NavLink>
           );
         })}
+        <div className="relative w-full">
+          {/* Pop-up Dropdown Menu positioned above the trigger button */}
+          {toggle && (
+            <div className="absolute top-12.5 left-0 mb-2 w-full min-w-50 p-1.5 bg-[#121927] border border-slate-800 rounded-2xl shadow-2xl z-50 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200">
+              <div className="flex flex-col gap-0.5">
+                {dropdownItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        item.onClick();
+                        setToggle(false);
+                      }}
+                      className={`flex items-center w-full gap-3 px-3.5 py-2.5 text-xs font-medium rounded-xl transition-all duration-150 ${
+                        item.danger
+                          ? "text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                          : "text-slate-300 hover:bg-slate-800/70 hover:text-white"
+                      }`}
+                    >
+                      <Icon
+                        size={18}
+                        className={
+                          item.danger ? "text-red-400" : "text-slate-400"
+                        }
+                      />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Main Trigger Button */}
+          <button
+            type="button"
+            className={`relative flex items-center gap-3.5 px-3.5 py-3 rounded-xl transition-all duration-200 w-full ${
+              toggle
+                ? "text-white bg-hover-blue font-semibold shadow-sm"
+                : "text-subtext hover:text-white hover:bg-hover-blue/50"
+            }`}
+            onClick={() => setToggle(!toggle)}
+          >
+            <Menu size={20} />
+            <span className="text-sm font-medium tracking-wide">More</span>
+          </button>
+        </div>
       </nav>
 
       {/* Footer Section */}
@@ -113,21 +208,9 @@ const MainSidebar = () => {
             <span className="text-sm font-semibold text-white truncate transition-colors group-hover:text-white">
               Ahad Shaikh
             </span>
-            <span className="text-xs truncate text-subtext">
-              @ahad.shk.0
-            </span>
+            <span className="text-xs truncate text-subtext">@ahad.shk.0</span>
           </div>
         </NavLink>
-
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          type="button"
-          className="flex items-center justify-center w-full gap-2 px-4 py-2.5 text-sm font-semibold transition-all duration-200 rounded-xl border bg-warning/10 border-warning/30 text-warning hover:bg-warning hover:text-white hover:border-warningale-[0.98] cursor-pointer"
-        >
-          <FiLogOut size={18} strokeWidth={2} />
-          <span>Log Out</span>
-        </button>
       </div>
     </aside>
   );

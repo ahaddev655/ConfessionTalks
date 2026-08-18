@@ -7,6 +7,8 @@ import ReelsPage from "./pages/ReelsPage";
 import StoriesPage from "./pages/StoriesPage";
 import PersonalProfile from "./pages/PersonalProfile";
 import ErrorPage from "./pages/ErrorPage";
+import SettingsLayout from "./layouts/SettingsLayout";
+import ProfileSettings from "./components/Settings/ProfileSettings";
 
 function App() {
   const routes = createBrowserRouter([
@@ -29,6 +31,16 @@ function App() {
         {
           path: "profile",
           element: <PersonalProfile />,
+        },
+        {
+          path: "settings",
+          element: <SettingsLayout />,
+          children: [
+            {
+              index: true,
+              element: <ProfileSettings />,
+            },
+          ],
         },
       ],
     },

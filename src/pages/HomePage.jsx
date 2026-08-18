@@ -233,7 +233,7 @@ const HomePage = () => {
     <div className="min-h-screen antialiased bg-slate-50 text-slate-800">
       {/* Comments Drawer / Modal */}
       <div
-        className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 ${
           selectedVideo
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -241,7 +241,7 @@ const HomePage = () => {
         onClick={() => setSelectedVideo(null)}
       >
         <div
-          className="w-full max-w-lg rounded-t-3xl sm:rounded-2xl bg-white border border-slate-200 shadow-2xl flex flex-col h-[80vh] sm:h-162.5 overflow-hidden transition-transform duration-300 transform scale-100"
+          className="w-full max-w-lg rounded-t-3xl sm:rounded-2xl bg-white border border-slate-200 shadow-2xl flex flex-col h-full sm:h-162.5 overflow-hidden transition-transform duration-300 transform scale-100"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -328,12 +328,12 @@ const HomePage = () => {
       </div>
 
       {/* Main Feed Container */}
-      <main className="max-w-md px-2 py-6 mx-auto sm:px-4">
+      <main className="max-w-md py-6 mx-auto">
         {/* Stories Slider */}
         <div className="relative mb-8 group">
           <button
             onClick={() => handleScroll("left")}
-            className="absolute z-10 p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -left-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100"
+            className="absolute z-10 hidden p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -left-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100 sm:block"
             aria-label="Scroll left"
           >
             <ChevronLeft size={18} />
@@ -369,7 +369,7 @@ const HomePage = () => {
 
           <button
             onClick={() => handleScroll("right")}
-            className="absolute z-10 p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -right-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100"
+            className="absolute z-10 hidden p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -right-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100 sm:block"
             aria-label="Scroll right"
           >
             <ChevronRight size={18} />

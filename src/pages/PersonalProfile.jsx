@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Bookmark, Grid3x3, RefreshCw, SquarePlay } from "lucide-react";
+import { Bookmark, Grid3x3, Link2, RefreshCw, SquarePlay } from "lucide-react";
 import Reels from "./../components/Profile/Reels";
 import Posts from "./../components/Profile/Posts";
 import BookMarks from "./../components/Profile/BookMarks";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const PersonalProfile = () => {
   // ---- UseStates ----
@@ -39,6 +40,13 @@ const PersonalProfile = () => {
     },
   ];
 
+  const links = [
+    "https://pakdeals.vercel.app",
+    "https://wechat-ahaddev655.vercel.app/",
+    "https://z-coins.vercel.app/auth",
+    "https://gitinsight-one.vercel.app/",
+  ];
+
   // ---- API Configuration ----
   const getDetails = () => {
     axios
@@ -62,14 +70,14 @@ const PersonalProfile = () => {
   }, []);
 
   return (
-    <div className="flex items-start justify-center w-full px-4 py-10 bg-slate-50 sm:px-6 lg:px-8">
-      {/* Centered Profile Container */}
+    <div className="flex items-start justify-center w-full py-6 bg-slate-50">
+      {/* Profile Container */}
       <div className="flex flex-col items-center w-full max-w-2xl">
         {/* Profile Card */}
-        <div className="flex items-start w-full gap-6 p-6 bg-white border shadow-sm rounded-2xl border-slate-200">
+        <div className="items-start w-full p-6 text-center bg-white border shadow-sm gap-3.5 sm:text-start sm:flex rounded-2xl border-slate-200">
           {/* Avatar Section */}
           <div className="shrink-0">
-            <div className="w-24 h-24 overflow-hidden border rounded-full sm:w-28 sm:h-28 border-slate-200 ring-2 ring-slate-100">
+            <div className="w-24 h-24 mx-auto overflow-hidden border rounded-full sm:mx-0 sm:w-28 sm:h-28 border-slate-200 ring-2 ring-slate-100">
               <img
                 src={
                   userData?.profilePic ||
@@ -82,7 +90,7 @@ const PersonalProfile = () => {
           </div>
 
           {/* Details Section */}
-          <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
+          <div className="flex flex-col justify-between flex-1 min-w-0 pt-1 pb-4">
             {/* Identity */}
             <div>
               <h1 className="text-xl font-bold tracking-tight truncate sm:text-2xl text-slate-900">
@@ -94,7 +102,7 @@ const PersonalProfile = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex items-center gap-6 py-3 my-4 border-y border-slate-100">
+            <div className="flex items-center justify-center gap-6 py-3 my-4 sm:justify-start border-y border-slate-100">
               <div className="flex items-baseline gap-1.5">
                 <span className="text-base font-bold text-slate-900">
                   {postsCount}
@@ -143,6 +151,27 @@ const PersonalProfile = () => {
               <p className="text-sm italic text-slate-400">
                 No description available.
               </p>
+            )}
+
+            <div className="h-[0.5px] my-3 bg-slate-100" />
+
+            {/* Links Section */}
+            {links && links.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                {links.map((link, i) => {
+                  return (
+                    <Link
+                      key={i}
+                      to={link}
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-xs transition-colors duration-150"
+                    >
+                      <Link2 size={14} color="#64748b" />
+                      <span className="truncate">{link}</span>
+                    </Link>
+                  );
+                })}
+              </div>
             )}
           </div>
         </div>
