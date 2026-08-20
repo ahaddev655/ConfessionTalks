@@ -22,7 +22,7 @@ const SettingsSidebar = () => {
   ];
 
   return (
-    <div className="flex flex-col justify-between w-full h-full p-3 bg-white border-r select-none max-w-65 border-slate-200/80">
+    <div className="flex flex-col justify-between w-full h-full p-3 bg-white border-r select-none rounded-l-xl max-w-65 border-slate-200/80">
       <div>
         {/* Sidebar Header */}
         <div className="px-3 py-2.5 mb-2">

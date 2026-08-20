@@ -18,10 +18,11 @@ const AuthenticationPage = () => {
 
   // ---- User Data Object ----
   const [formData, setFormData] = useState({
-    fname: "",
-    uname: "",
+    firstname: "",
+    lastname: "",
+    username: "",
     email: "",
-    pass: "",
+    password: "",
     rememberMe: false,
     terms: false,
   });
@@ -49,23 +50,24 @@ const AuthenticationPage = () => {
     if (!login) {
       // ---- Validations ----
       if (
-        !formData.uname ||
-        !formData.fname ||
+        !formData.firstname ||
+        !formData.lastname ||
+        !formData.username ||
         !formData.email ||
-        !formData.pass
+        !formData.password
       ) {
         toast.error("All Fields are required.");
         return;
       }
-      if (formData?.uname?.trim().includes(" ")) {
+      if (formData?.username?.trim().includes(" ")) {
         toast.error("UserName is invalid");
         return;
       }
-      if (formData?.uname?.trim().includes("@")) {
+      if (formData?.username?.trim().includes("@")) {
         toast.error("Please remove @ from username");
         return;
       }
-      if (formData.pass?.length < 8) {
+      if (formData.password?.length < 8) {
         toast.error("Password must consist of 8 characters");
         return;
       }
@@ -89,10 +91,11 @@ const AuthenticationPage = () => {
 
           // Reset all the fields
           setFormData({
-            fname: "",
-            uname: "",
+            firstname: "",
+            lastname: "",
+            username: "",
             email: "",
-            pass: "",
+            password: "",
             rememberMe: false,
             terms: false,
           });
@@ -117,7 +120,7 @@ const AuthenticationPage = () => {
     }
 
     // ---- Validations ----
-    if (!formData.email || !formData.pass) {
+    if (!formData.email || !formData.password) {
       toast.error("All Fields are required.");
       return;
     }
@@ -128,7 +131,7 @@ const AuthenticationPage = () => {
     // Configure Payload
     const payload = {
       email: formData.email,
-      pass: formData.pass,
+      password: formData.password,
     };
 
     // API Configuration
@@ -147,7 +150,7 @@ const AuthenticationPage = () => {
         // Reset all the fields
         setFormData({
           email: "",
-          pass: "",
+          password: "",
         });
 
         setTimeout(() => {
@@ -219,23 +222,35 @@ const AuthenticationPage = () => {
           >
             {!login && (
               <>
-                {/* Full Name */}
-                <InputItem
-                  changeFunct={handleInputChange}
-                  Icon={User}
-                  identity={"fname"}
-                  label={"Full Name"}
-                  placeholder={"John Doe"}
-                  value={formData.fname}
-                />
+                <div className="flex items-center justify-center gap-2">
+                  {/* First Name */}
+                  <InputItem
+                    changeFunct={handleInputChange}
+                    Icon={User}
+                    identity={"firstname"}
+                    label={"First Name"}
+                    placeholder={"John"}
+                    value={formData.firstname}
+                  />
+
+                  {/* Last Name */}
+                  <InputItem
+                    changeFunct={handleInputChange}
+                    Icon={User}
+                    identity={"lastname"}
+                    label={"Last Name"}
+                    placeholder={"Doe"}
+                    value={formData.lastname}
+                  />
+                </div>
 
                 {/* Username */}
                 <InputItem
                   changeFunct={handleInputChange}
-                  identity={"uname"}
+                  identity={"username"}
                   label={"Username"}
                   placeholder={"johndoe112"}
-                  value={formData.uname}
+                  value={formData.username}
                 />
               </>
             )}
@@ -253,11 +268,11 @@ const AuthenticationPage = () => {
             {/* Password */}
             <InputItem
               changeFunct={handleInputChange}
-              identity={"pass"}
+              identity={"password"}
               Icon={Lock}
               label={"Password"}
               placeholder={"••••••••••••"}
-              value={formData.pass}
+              value={formData.password}
             />
 
             {/* CheckBoxes */}
@@ -313,7 +328,7 @@ const AuthenticationPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 flex items-center justify-center gap-2 py-3 px-4 bg-brantext-brand-accent hover:bg-hover-blue active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+              className="w-full mt-6 flex items-center justify-center gap-2 py-3 px-4 bg-brand-accent hover:bg-hover-blue active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
             >
               {loading && <RotateCw className="w-4 h-4 animate-spin" />}
               {loading

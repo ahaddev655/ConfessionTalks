@@ -11,10 +11,10 @@ const InputComp = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const isPassword = identity === "pass";
+  const isPassword = identity === "password";
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 w-full">
       <label
         htmlFor={identity}
         className="text-xs font-semibold tracking-wider uppercase text-body-text"
@@ -41,7 +41,7 @@ const InputComp = ({
           value={value}
           onChange={changeFunct}
         />
-        {identity === "uname" ? (
+        {identity === "username" ? (
           <span className="text-gray-300 absolute left-3.5 pointer-events-none text-sm font-semibold peer-focus:text-brand-accent transition-colors">
             @
           </span>
