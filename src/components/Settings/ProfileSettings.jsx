@@ -1,9 +1,18 @@
 import { useRef, useState } from "react";
 import InputItem from "../InputItem";
-import { Camera, FileText, Mail, Mars, User } from "lucide-react";
+import {
+  Camera,
+  FileText,
+  Mail,
+  Mars,
+  User,
+  Link2,
+  Plus,
+  X,
+} from "lucide-react";
 
 const ProfileSettings = () => {
-  // ---- useStates Arrays ----
+  // ---- State ----
   const [personalData, setPersonalData] = useState({
     firstname: "",
     lastname: "",
@@ -12,7 +21,10 @@ const ProfileSettings = () => {
     profileAvatar: "",
     gender: "",
     description: "",
+    links: [], // Array to store up to 4 link objects: { id, url }
   });
+
+  const [newLink, setNewLink] = useState("");
 
   // ---- Refs ----
   const avatarRef = useRef();
@@ -32,6 +44,25 @@ const ProfileSettings = () => {
       }));
     }
   };
+
+  const handleAddLink = () => {
+    if (!newLink.trim()) return;
+    if (personalData.links.length >= 4) return;
+
+    setPersonalData((prev) => ({
+      ...prev,
+      links: [...prev.links, { id: Date.now(), url: newLink.trim() }],
+    }));
+    setNewLink("");
+  };
+
+  const handleRemoveLink = (id) => {
+    setPersonalData((prev) => ({
+      ...prev,
+      links: prev.links.filter((link) => link.id !== id),
+    }));
+  };
+
   return (
     <div className="w-full max-w-2xl">
       {/* Heading */}
@@ -44,10 +75,10 @@ const ProfileSettings = () => {
         </p>
       </div>
 
-        <hr className="my-5 border-border-color" />
+      <hr className="my-5 border-border-color" />
 
       {/* Form */}
-      <form className="w-full space-y-6">
+      <form className="w-full space-y-6" onSubmit={(e) => e.preventDefault()}>
         {/* Profile Picture */}
         <div className="relative flex flex-col items-center justify-center">
           <div
@@ -132,6 +163,75 @@ const ProfileSettings = () => {
             value={personalData.gender}
             changeFunct={handleInputChange}
           />
+
+          {/* Custom Link Manager */}
+          <div className="flex flex-col gap-1.5 w-full">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold tracking-wider uppercase text-body-text">
+                Website / Social Links
+              </label>
+              <span className="text-xs font-medium text-slate-400">
+                {personalData.links.length}/4 Links
+              </span>
+            </div>
+
+            {/* Add Link Field */}
+            {personalData.links.length < 4 && (
+              <div className="relative flex items-center gap-2">
+                <div className="relative w-full">
+                  <input
+                    type="url"
+                    placeholder="https://yourlink.com"
+                    value={newLink}
+                    onChange={(e) => setNewLink(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddLink();
+                      }
+                    }}
+                    className="w-full h-10 pr-3 text-sm font-medium transition-all border rounded-lg pl-9 border-border-color focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent text-body-text"
+                  />
+                  <Link2
+                    size={18}
+                    className="absolute text-gray-300 pointer-events-none top-2.5 left-3"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddLink}
+                  className="px-3.5 h-10 flex items-center gap-1 text-xs font-semibold text-white bg-brand-accent hover:bg-hover-blue rounded-lg transition-colors shrink-0"
+                >
+                  <Plus size={16} />
+                  Add
+                </button>
+              </div>
+            )}
+
+            {/* Added Links List */}
+            {personalData.links.length > 0 && (
+              <ul className="flex flex-col gap-2 mt-2">
+                {personalData.links.map((link) => (
+                  <li
+                    key={link.id}
+                    className="flex items-center justify-between px-3 py-2 text-xs font-medium border rounded-lg bg-slate-50 border-slate-200 text-slate-700"
+                  >
+                    <div className="flex items-center gap-2 pr-2 truncate">
+                      <Link2 size={14} className="text-slate-400 shrink-0" />
+                      <span className="truncate">{link.url}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveLink(link.id)}
+                      className="p-1 transition-colors rounded-md text-slate-400 hover:text-red-500"
+                    >
+                      <X size={14} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           {/* Description */}
           <div className="flex flex-col gap-1.5 w-full">
