@@ -6,7 +6,7 @@ const SettingsLayout = () => {
   return (
     <div className="flex h-full max-w-4xl mx-auto border shadow-xl rounded-xl border-border-color">
       <SettingsSidebar />
-      <main className="w-full p-6 bg-white rounded-r-xl">
+      <main className="w-full p-6 overflow-auto bg-white rounded-r-xl max-h-150 scrollbar-thin">
         <Outlet />
       </main>
     </div>

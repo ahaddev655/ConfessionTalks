@@ -44,7 +44,7 @@ const ProfileSettings = () => {
         </p>
       </div>
 
-      <hr className="my-5 border-border-color" />
+        <hr className="my-5 border-border-color" />
 
       {/* Form */}
       <form className="w-full space-y-6">

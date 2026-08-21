@@ -9,6 +9,11 @@ import PersonalProfile from "./pages/PersonalProfile";
 import ErrorPage from "./pages/ErrorPage";
 import SettingsLayout from "./layouts/SettingsLayout";
 import ProfileSettings from "./components/Settings/ProfileSettings";
+import NotificationsSettings from "./components/Settings/NotificationsSettings";
+import PrivacySettings from "./components/Settings/PrivacySettings";
+import BlockedUsersSettings from "./components/Settings/BlockedUsersSettings";
+import Help from "./components/Settings/Help";
+import PrivacyCenter from "./components/Settings/PrivacyCenter";
 
 function App() {
   const routes = createBrowserRouter([
@@ -39,6 +44,26 @@ function App() {
             {
               index: true,
               element: <ProfileSettings />,
+            },
+            {
+              path: "/en/settings/notifications",
+              element: <NotificationsSettings />,
+            },
+            {
+              path: "/en/settings/privacy",
+              element: <PrivacySettings />,
+            },
+            {
+              path: "/en/settings/blocked",
+              element: <BlockedUsersSettings />,
+            },
+            {
+              path: "/en/settings/help",
+              element: <Help />,
+            },
+            {
+              path: "/en/settings/privacy-center",
+              element: <PrivacyCenter />,
             },
           ],
         },
