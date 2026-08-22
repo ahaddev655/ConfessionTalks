@@ -40,22 +40,19 @@ const PersonalProfile = () => {
     },
   ];
 
-  const links = [
-    "https://pakdeals.vercel.app",
-    "https://wechat-ahaddev655.vercel.app/",
-    "https://z-coins.vercel.app/auth",
-    "https://gitinsight-one.vercel.app/",
-  ];
-
   // ---- API Configuration ----
   const getDetails = () => {
+    setLoading(true);
     axios
       .get(`http://localhost:3000/api/user/${id}`)
       .then((response) => {
         setUserData(response?.data.user_details);
       })
-      .catch((error) => {
-        // alert(error?.response?.data?.error || "Error fetching details");
+      .catch((error) => {})
+      .finally(() => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2500);
       });
   };
 
@@ -77,62 +74,95 @@ const PersonalProfile = () => {
         <div className="items-start w-full p-6 text-center bg-white border shadow-sm gap-3.5 sm:text-start sm:flex rounded-2xl border-slate-200">
           {/* Avatar Section */}
           <div className="shrink-0">
-            <div className="w-24 h-24 mx-auto overflow-hidden border rounded-full sm:mx-0 sm:w-28 sm:h-28 border-slate-200 ring-2 ring-slate-100">
-              <img
-                src={
-                  userData?.profilePic ||
-                  "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                }
-                alt={userData?.userName || "User profile"}
-                className="object-cover w-full h-full"
-              />
-            </div>
+            {loading ? (
+              <div className="w-24 h-24 bg-gray-200 rounded-full" />
+            ) : (
+              <div className="w-24 h-24 mx-auto overflow-hidden border rounded-full sm:mx-0 sm:w-28 sm:h-28 border-slate-200 ring-2 ring-slate-100">
+                <img
+                  src={
+                    userData?.profilePic ||
+                    "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                  }
+                  alt={userData?.username || "User profile"}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            )}
           </div>
 
           {/* Details Section */}
           <div className="flex flex-col justify-between flex-1 min-w-0 pt-1 pb-4">
             {/* Identity */}
             <div>
-              <h1 className="text-xl font-bold tracking-tight truncate sm:text-2xl text-slate-900">
-                {userData?.userName || "ahad.shk.0"}
-              </h1>
-              <p className="text-sm font-medium text-slate-500 mt-0.5">
-                {userData?.fullName || "Muhammad Ahad"}
-              </p>
+              {loading ? (
+                <div className="h-5 bg-gray-200 rounded w-50 animate-pulse" />
+              ) : (
+                <h1 className="text-xl font-bold tracking-tight truncate sm:text-2xl text-slate-900">
+                  {userData?.username || "unknown"}
+                </h1>
+              )}
+
+              {loading ? (
+                <div className="h-5 mt-3 bg-gray-200 rounded w-50 animate-pulse" />
+              ) : (
+                <p className="text-sm font-medium text-slate-500 mt-0.5">
+                  {userData?.fname + " " + userData?.lname || "Unkown"}
+                </p>
+              )}
             </div>
 
             {/* Stats */}
             <div className="flex items-center justify-center gap-6 py-3 my-4 sm:justify-start border-y border-slate-100">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-base font-bold text-slate-900">
-                  {postsCount}
-                </span>
-                <span className="text-xs font-medium text-slate-500">
-                  posts
-                </span>
+                {loading ? (
+                  <div className="h-5 bg-gray-200 rounded w-15 animate-pulse" />
+                ) : (
+                  <>
+                    <span className="text-base font-bold text-slate-900">
+                      {postsCount}
+                    </span>
+                    <span className="text-xs font-medium text-slate-500">
+                      posts
+                    </span>
+                  </>
+                )}
               </div>
 
               <div className="flex items-baseline gap-1.5">
-                <span className="text-base font-bold text-slate-900">
-                  {followersCount}
-                </span>
-                <span className="text-xs font-medium text-slate-500">
-                  followers
-                </span>
+                {loading ? (
+                  <div className="h-5 bg-gray-200 rounded w-15 animate-pulse" />
+                ) : (
+                  <>
+                    <span className="text-base font-bold text-slate-900">
+                      {followersCount}
+                    </span>
+                    <span className="text-xs font-medium text-slate-500">
+                      followers
+                    </span>
+                  </>
+                )}
               </div>
 
               <div className="flex items-baseline gap-1.5">
-                <span className="text-base font-bold text-slate-900">
-                  {followingCount}
-                </span>
-                <span className="text-xs font-medium text-slate-500">
-                  following
-                </span>
+                {loading ? (
+                  <div className="h-5 bg-gray-200 rounded w-15 animate-pulse" />
+                ) : (
+                  <>
+                    <span className="text-base font-bold text-slate-900">
+                      {followingCount}
+                    </span>
+                    <span className="text-xs font-medium text-slate-500">
+                      following
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
             {/* Description */}
-            {userData?.description ? (
+            {loading ? (
+              <div className="bg-gray-200 rounded h-7 w-100 animate-pulse" />
+            ) : userData?.description ? (
               <div className="text-sm leading-relaxed text-slate-700">
                 <p className={!isExpanded ? "line-clamp-2" : ""}>
                   {userData?.description}
@@ -156,22 +186,25 @@ const PersonalProfile = () => {
             <div className="h-[0.5px] my-3 bg-slate-100" />
 
             {/* Links Section */}
-            {links && links.length > 0 && (
+            {loading ? (
+              <div className="bg-gray-200 rounded h-7 w-100 animate-pulse" />
+            ) : typeof userData?.links !== "undefined" &&
+              userData?.links?.length > 0 ? (
               <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                {links.map((link, i) => {
-                  return (
-                    <Link
-                      key={i}
-                      to={link}
-                      target="_blank"
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-xs transition-colors duration-150"
-                    >
-                      <Link2 size={14} color="#64748b" />
-                      <span className="truncate">{link}</span>
-                    </Link>
-                  );
-                })}
+                {userData.links.map((link, i) => (
+                  <Link
+                    key={i}
+                    to={link}
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-xs transition-colors duration-150"
+                  >
+                    <Link2 size={14} color="#64748b" />
+                    <span className="truncate">{link}</span>
+                  </Link>
+                ))}
               </div>
+            ) : (
+              <p className="text-sm italic text-slate-400">No links added.</p>
             )}
           </div>
         </div>

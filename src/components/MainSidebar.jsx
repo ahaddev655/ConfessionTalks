@@ -16,23 +16,26 @@ import {
   Bookmark,
   LogOut,
   ShieldAlert,
+  Plus,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const MainSidebar = () => {
   // ---- Variables ----
   const navigate = useNavigate();
+  const id = localStorage.getItem("cota_id");
 
   // ---- UseStates ----
   const [toggle, setToggle] = useState(false);
-
+  const [userData, setUserData] = useState(null);
   // ---- Functions ----
   const handleLogout = () => {
     localStorage.removeItem("ct_id");
     navigate("/");
   };
 
-  // ---- Navigation Items ----
+  // ---- Arrays ----
   const links = [
     { path: "/en", icon: PiHouse, filledIcon: PiHouseFill, label: "Home" },
     {
@@ -46,6 +49,12 @@ const MainSidebar = () => {
       icon: IoChatbubbleOutline,
       filledIcon: IoChatbubbleSharp,
       label: "Messages",
+    },
+    {
+      path: "/en/create",
+      icon: Plus,
+      filledIcon: Plus,
+      label: "Create",
     },
   ];
 
@@ -76,6 +85,27 @@ const MainSidebar = () => {
       onClick: handleLogout,
     },
   ];
+
+  // ---- API Configuration ----
+  const getDetails = () => {
+    axios
+      .get(`http://localhost:3000/api/user/${id}`)
+      .then((response) => {
+        const data = response?.data.user_details;
+        setUserData({
+          fname: data.fname,
+          lname: data.lname,
+          username: data.username,
+          profilePic: data.profilePic,
+        });
+      })
+      .catch((error) => {});
+  };
+
+  // ---- useEffects ----
+  useEffect(() => {
+    getDetails();
+  }, []);
 
   return (
     <aside className="sticky top-0 flex-col hidden w-full h-screen px-4 py-6 border-r shadow-xl select-none md:flex max-w-65 shrink-0 bg-primary-dark border-white/10">
@@ -197,7 +227,10 @@ const MainSidebar = () => {
         >
           <div className="relative shrink-0">
             <img
-              src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+              src={
+                userData?.profilePic ||
+                "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+              }
               alt="User avatar"
               className="object-cover transition-all rounded-full w-9 h-9 ring-2 ring-white/20 group-hover:ring-white/40"
             />
@@ -206,9 +239,11 @@ const MainSidebar = () => {
 
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-semibold text-white truncate transition-colors group-hover:text-white">
-              Ahad Shaikh
+              {userData?.fname + " " + userData?.lname || "Unkown"}
             </span>
-            <span className="text-xs truncate text-subtext">@ahad.shk.0</span>
+            <span className="text-xs truncate text-subtext">
+              @{userData?.username || "unknown"}
+            </span>
           </div>
         </NavLink>
       </div>

@@ -14,6 +14,7 @@ import PrivacySettings from "./components/Settings/PrivacySettings";
 import BlockedUsersSettings from "./components/Settings/BlockedUsersSettings";
 import Help from "./components/Settings/Help";
 import PrivacyCenter from "./components/Settings/PrivacyCenter";
+import CreatePage from "./pages/CreatePage";
 
 function App() {
   const routes = createBrowserRouter([
@@ -66,6 +67,10 @@ function App() {
               element: <PrivacyCenter />,
             },
           ],
+        },
+        {
+          path: "create",
+          element: <CreatePage />,
         },
       ],
     },

@@ -38,7 +38,6 @@ const HomePage = () => {
       id: 1,
       video_id: "qasw36210jsc",
       video_url: SampleVideo,
-      description: "Exploring nature views 🌿✨ #nature #vibes",
       likes: 1250,
       commentList: [
         {
@@ -61,7 +60,6 @@ const HomePage = () => {
       id: 2,
       video_id: "zxcv98765mlk",
       video_url: SampleVideo2,
-      description: "Quick frontend workflow preview 🚀 #react #tailwind #ui",
       likes: 1250000,
       commentList: [
         {
@@ -474,15 +472,6 @@ const HomePage = () => {
                   >
                     {isMuted ? <VolumeOff size={16} /> : <Volume2 size={16} />}
                   </button>
-
-                  {/* Description Overlay */}
-                  {video.description && (
-                    <div className="absolute z-10 pointer-events-none bottom-4 left-4 right-16">
-                      <p className="text-xs leading-relaxed text-white line-clamp-2 drop-shadow-sm">
-                        {video.description}
-                      </p>
-                    </div>
-                  )}
                 </div>
 
                 {/* Bottom Interactive Action Bar */}
