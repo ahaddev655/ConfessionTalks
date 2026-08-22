@@ -12,33 +12,33 @@ const MainLayout = () => {
   const navigate = useNavigate();
 
   // ---- UseStates ----
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // ---- UseEffects ----
-  useEffect(() => {
-    if (!id || id === null) {
-      toast.error("ID not found");
-      setTimeout(() => {
-        navigate("/");
-      }, 2500);
-      return;
-    }
-    axios
-      .get(`http://localhost:3000/api/auth/verify/${id}`, {
-        withCredentials: true,
-      })
-      .then((response) => {
-        setTimeout(() => {
-          setLoading(false);
-        }, 2500);
-      })
-      .catch((error) => {
-        toast.error(error?.response?.data.error || "Internal Server Error");
-        setTimeout(() => {
-          navigate("/");
-        }, 2500);
-      });
-  }, []);
+  // useEffect(() => {
+  //   if (!id || id === null) {
+  //     toast.error("ID not found");
+  //     setTimeout(() => {
+  //       navigate("/");
+  //     }, 2500);
+  //     return;
+  //   }
+  //   axios
+  //     .get(`http://localhost:3000/api/auth/verify/${id}`, {
+  //       withCredentials: true,
+  //     })
+  //     .then((response) => {
+  //       setTimeout(() => {
+  //         setLoading(false);
+  //       }, 2500);
+  //     })
+  //     .catch((error) => {
+  //       toast.error(error?.response?.data.error || "Internal Server Error");
+  //       setTimeout(() => {
+  //         navigate("/");
+  //       }, 2500);
+  //     });
+  // }, []);
 
   return (
     <>
