@@ -15,6 +15,7 @@ import BlockedUsersSettings from "./components/Settings/BlockedUsersSettings";
 import Help from "./components/Settings/Help";
 import PrivacyCenter from "./components/Settings/PrivacyCenter";
 import CreatePage from "./pages/CreatePage";
+import AddStoryPage from "./pages/AddStoryPage";
 
 function App() {
   const routes = createBrowserRouter([
@@ -77,6 +78,10 @@ function App() {
     {
       path: "/reels",
       element: <ReelsPage />,
+    },
+    {
+      path: "/story",
+      element: <AddStoryPage />,
     },
     // {
     //   path: "/reels/:video_id",

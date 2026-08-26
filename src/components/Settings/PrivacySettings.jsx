@@ -31,8 +31,8 @@ const PrivacySettings = () => {
       <div className="mt-4">
         <p className="text-xs text-subtext">
           When your account is public, your profile and posts can be seen by
-          anyone, on or off ConfessionTalks, even if they don't have an ConfessionTalks
-          account.
+          anyone, on or off ConfessionTalks, even if they don't have an
+          ConfessionTalks account.
         </p>
         <p className="mt-3 text-xs text-subtext">
           When your account is private, only the followers you approve can see

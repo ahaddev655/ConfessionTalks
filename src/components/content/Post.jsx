@@ -111,9 +111,7 @@ const Post = () => {
             {/* Top Bar File Indicator */}
             <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md text-white text-[11px] font-medium">
               <FileImage size={14} className="text-slate-300" />
-              <span className="truncate max-w-35">
-                {selectedFile?.name}
-              </span>
+              <span className="truncate max-w-35">{selectedFile?.name}</span>
             </div>
 
             {/* Hover Action Overlay */}

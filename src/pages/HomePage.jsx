@@ -327,51 +327,73 @@ const HomePage = () => {
 
       {/* Main Feed Container */}
       <main className="max-w-md py-6 mx-auto">
-        {/* Stories Slider */}
-        <div className="relative mb-8 group">
-          <button
-            onClick={() => handleScroll("left")}
-            className="absolute z-10 hidden p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -left-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100 sm:block"
-            aria-label="Scroll left"
+        <div className="flex items-center gap-3 mb-6">
+          {/* Add Story */}
+          <Link
+            to="/story"
+            className="flex flex-col items-center w-16 gap-1 shrink-0 group/story"
           >
-            <ChevronLeft size={18} />
-          </button>
+            {/* Gradient Ring Wrapper */}
+            <div className="p-0.5 rounded-full bg-linear-to-tr from-amber-500 via-rose-500 to-blue-600 group-hover/story:scale-105 transition-transform duration-200">
+              <div className="p-0.5 bg-white rounded-full">
+                <img
+                  src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                  alt="Add Story"
+                  className="object-cover w-12 h-12 rounded-full"
+                />
+              </div>
+            </div>
+            <span className="w-full text-xs text-center truncate transition-colors text-slate-500 group-hover/story:text-slate-900">
+              Add Story
+            </span>
+          </Link>
 
-          <div
-            ref={scrollContainerRef}
-            className="flex items-center gap-3 px-1 py-2 overflow-x-auto scroll-smooth scrollbar-none"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {Array.from({ length: 10 }).map((_, index) => (
-              <Link
-                to={`/stories/@${uname}`}
-                key={index}
-                className="shrink-0 flex flex-col items-center gap-1.5 w-16 group/story"
-              >
-                {/* Gradient Ring Wrapper */}
-                <div className="p-0.5 rounded-full bg-linear-to-tr from-amber-500 via-rose-500 to-blue-600 group-hover/story:scale-105 transition-transform duration-200">
-                  <div className="p-0.5 bg-white rounded-full">
-                    <img
-                      src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                      alt={`Story by ${uname}`}
-                      className="object-cover rounded-full w-13 h-13"
-                    />
+          {/* Stories Slider */}
+          <div className="relative flex-1 max-w-md group">
+            <button
+              onClick={() => handleScroll("left")}
+              className="absolute z-10 hidden p-1.5 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -left-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100 sm:block"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft size={18} />
+            </button>
+
+            <div
+              ref={scrollContainerRef}
+              className="flex items-center gap-3 py-1 overflow-x-auto scroll-smooth scrollbar-none"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {Array.from({ length: 10 }).map((_, index) => (
+                <Link
+                  to={`/stories/@${uname}`}
+                  key={index}
+                  className="flex flex-col items-center w-16 gap-1 shrink-0 group/story"
+                >
+                  {/* Gradient Ring Wrapper */}
+                  <div className="p-0.5 rounded-full bg-linear-to-tr from-amber-500 via-rose-500 to-blue-600 group-hover/story:scale-105 transition-transform duration-200">
+                    <div className="p-0.5 bg-white rounded-full">
+                      <img
+                        src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                        alt={`Story by ${uname}`}
+                        className="object-cover w-12 h-12 rounded-full"
+                      />
+                    </div>
                   </div>
-                </div>
-                <span className="w-full text-[11px] text-center truncate text-slate-500 group-hover/story:text-slate-900 transition-colors">
-                  {index === 0 ? "Your story" : uname}
-                </span>
-              </Link>
-            ))}
-          </div>
+                  <span className="w-full text-xs text-center truncate transition-colors text-slate-500 group-hover/story:text-slate-900">
+                    {index === 0 ? "Your story" : uname}
+                  </span>
+                </Link>
+              ))}
+            </div>
 
-          <button
-            onClick={() => handleScroll("right")}
-            className="absolute z-10 hidden p-2 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -right-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100 sm:block"
-            aria-label="Scroll right"
-          >
-            <ChevronRight size={18} />
-          </button>
+            <button
+              onClick={() => handleScroll("right")}
+              className="absolute z-10 hidden p-1.5 transition-opacity duration-200 -translate-y-1/2 border rounded-full shadow-md opacity-0 -right-3 top-1/2 bg-white/90 hover:bg-slate-100 text-slate-700 border-slate-200 group-hover:opacity-100 sm:block"
+              aria-label="Scroll right"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Video Feed */}
