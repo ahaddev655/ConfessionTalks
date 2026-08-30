@@ -16,8 +16,22 @@ import Help from "./components/Settings/Help";
 import PrivacyCenter from "./components/Settings/PrivacyCenter";
 import CreatePage from "./pages/CreatePage";
 import AddStoryPage from "./pages/AddStoryPage";
+import { useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  useEffect(() => {
+    axios
+      .delete("http://localhost:3000/api/user/expired-stories")
+      .then((response) => {
+        axios
+          .delete("http://localhost:3000/api/auth/delete-tokens")
+          .then((response) => {})
+          .catch((error) => {});
+      })
+      .catch((error) => {});
+  }, []);
+
   const routes = createBrowserRouter([
     {
       path: "*",

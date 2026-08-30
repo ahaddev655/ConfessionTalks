@@ -2,38 +2,46 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { PiHouse, PiHouseFill } from "react-icons/pi";
 import { LuSquarePlay } from "react-icons/lu";
 import { AiFillPlaySquare } from "react-icons/ai";
-import {
-  IoChatbubbleOutline,
-  IoChatbubbleSharp,
-  IoSettingsOutline,
-  IoSettingsSharp,
-} from "react-icons/io5";
-import { FiLogOut } from "react-icons/fi";
+import { IoChatbubbleOutline, IoChatbubbleSharp } from "react-icons/io5";
 import {
   Menu,
   Settings,
-  Moon,
   Bookmark,
   LogOut,
   ShieldAlert,
   Plus,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
 const MainSidebar = () => {
   // ---- Variables ----
   const navigate = useNavigate();
   const id = localStorage.getItem("cota_id");
+  const dropdownRef = useRef(null);
 
   // ---- UseStates ----
   const [toggle, setToggle] = useState(false);
   const [userData, setUserData] = useState(null);
+
   // ---- Functions ----
   const handleLogout = () => {
     localStorage.removeItem("ct_id");
     navigate("/");
   };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setToggle(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // ---- Arrays ----
   const links = [
@@ -88,18 +96,23 @@ const MainSidebar = () => {
 
   // ---- API Configuration ----
   const getDetails = () => {
+    if (!id) return;
     axios
       .get(`http://localhost:3000/api/user/${id}`)
       .then((response) => {
-        const data = response?.data.user_details;
-        setUserData({
-          fname: data.fname,
-          lname: data.lname,
-          username: data.username,
-          profilePic: data.profilePic,
-        });
+        const data = response?.data?.user_details;
+        if (data) {
+          setUserData({
+            fname: data.fname,
+            lname: data.lname,
+            username: data.username,
+            profilePic: data.profilePic,
+          });
+        }
       })
-      .catch((error) => {});
+      .catch((error) => {
+        console.error("Error fetching sidebar user data:", error);
+      });
   };
 
   // ---- useEffects ----
@@ -108,12 +121,15 @@ const MainSidebar = () => {
   }, []);
 
   return (
-    <aside className="sticky top-0 flex-col hidden w-full h-screen px-4 py-6 border-r shadow-xl select-none md:flex max-w-65 shrink-0 bg-primary-dark border-white/10">
+    <aside className="sticky top-0 z-40 flex flex-col h-screen px-4 py-6 border-r shadow-xl select-none w-fit lg:w-65 shrink-0 bg-primary-dark border-white/10">
       {/* Brand Header */}
       <div className="px-2 pb-5">
         <Link to="/en" className="block">
-          <h1 className="text-2xl font-black tracking-tight text-white transition-opacity whitespace-nowrap hover:opacity-90">
+          <h1 className="hidden text-2xl font-black tracking-tight text-white transition-opacity lg:block whitespace-nowrap hover:opacity-90">
             Confession<span className="text-brand-accent">Talks</span>
+          </h1>
+          <h1 className="block text-2xl font-black tracking-tight text-center text-white transition-opacity lg:hidden whitespace-nowrap hover:opacity-90">
+            C<span className="text-brand-accent">T</span>
           </h1>
         </Link>
       </div>
@@ -155,7 +171,7 @@ const MainSidebar = () => {
                     />
                   )}
 
-                  <span className="text-sm font-medium tracking-wide">
+                  <span className="hidden text-sm font-medium tracking-wide lg:block">
                     {item.label}
                   </span>
                 </>
@@ -163,10 +179,12 @@ const MainSidebar = () => {
             </NavLink>
           );
         })}
-        <div className="relative w-full">
+
+        {/* More Menu Dropdown Wrapper */}
+        <div className="relative w-full" ref={dropdownRef}>
           {/* Pop-up Dropdown Menu positioned above the trigger button */}
           {toggle && (
-            <div className="absolute top-12.5 left-0 mb-2 w-full min-w-50 p-1.5 bg-[#121927] border border-slate-800 rounded-2xl shadow-2xl z-50 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200">
+            <div className="absolute bottom-full left-0 mb-2 w-full min-w-48 p-1.5 bg-[#121927] border border-slate-800 rounded-2xl shadow-2xl z-50 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-150">
               <div className="flex flex-col gap-0.5">
                 {dropdownItems.map((item) => {
                   const Icon = item.icon;
@@ -208,8 +226,10 @@ const MainSidebar = () => {
             }`}
             onClick={() => setToggle(!toggle)}
           >
-            <Menu size={20} />
-            <span className="text-sm font-medium tracking-wide">More</span>
+            <Menu size={20} className="shrink-0" />
+            <span className="hidden text-sm font-medium tracking-wide lg:block">
+              More
+            </span>
           </button>
         </div>
       </nav>
@@ -237,9 +257,9 @@ const MainSidebar = () => {
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-primary-dark" />
           </div>
 
-          <div className="flex flex-col min-w-0">
+          <div className="flex-col hidden min-w-0 lg:flex">
             <span className="text-sm font-semibold text-white truncate transition-colors group-hover:text-white">
-              {userData?.fname + " " + userData?.lname || "Unkown"}
+              {userData ? `${userData.fname} ${userData.lname}` : "Unknown"}
             </span>
             <span className="text-xs truncate text-subtext">
               @{userData?.username || "unknown"}

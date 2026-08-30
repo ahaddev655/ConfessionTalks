@@ -1,64 +1,92 @@
-import React from "react";
+import React, { useState } from "react";
 
 const BlockedUsersSettings = () => {
+  // ---- Mock Data State ----
+  const [blockedUsers, setBlockedUsers] = useState([
+    {
+      id: 1,
+      username: "ahad.shk.0",
+      fullName: "Muhammad Ahad",
+      avatar:
+        "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
+    },
+    {
+      id: 2,
+      username: "sarah_dev",
+      fullName: "Sarah Jenkins",
+      avatar:
+        "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
+    },
+  ]);
+
+  // ---- Handlers ----
+  const handleUnblock = (userId) => {
+    setBlockedUsers((prevUsers) =>
+      prevUsers.filter((user) => user.id !== userId),
+    );
+  };
+
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full max-w-2xl px-4 py-6 mx-auto sm:px-6">
       {/* Heading */}
-      <div>
-        <h1 className="text-xl font-bold tracking-tight text-heading-text">
+      <div className="space-y-1">
+        <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-heading-text">
           Blocked Users
         </h1>
-        <p className="mt-1 text-xs text-subtext">
-          You can block people anytime from their profiles.
+        <p className="text-xs sm:text-sm text-subtext">
+          You can block people anytime from their profile or manage them here.
         </p>
       </div>
 
       <hr className="my-5 border-border-color" />
-      <div className="flex flex-col gap-1">
-        {Array(2)
-          .fill()
-          .map((_, i) => (
-            <>
-              <div className="flex items-baseline justify-between" key={i}>
-                {/* Avatar / Username / Name */}
-                <div className="flex items-center gap-2">
-                  <div className="w-10 h-10">
-                    <img
-                      src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                      alt="ahad.shk.0"
-                      className="w-full h-full rounded-full"
-                    />
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <p className="text-sm font-semibold leading-tight tracking-tight truncate cursor-pointer text-hover-blue hover:underline">
-                      ahad.shk.0
-                    </p>
-                    <span className="text-xs text-subtext truncate mt-0.5">
-                      Muhammad Ahad
-                    </span>
-                  </div>
+
+      {/* User List Container */}
+      <div className="flex flex-col w-full divide-y divide-gray-100">
+        {blockedUsers.length > 0 ? (
+          blockedUsers.map((user) => (
+            <div
+              key={user.id}
+              className="flex items-center justify-between gap-3 py-3"
+            >
+              {/* Avatar / Username / Name */}
+              <div className="flex items-center min-w-0 gap-3 pr-2">
+                <div className="w-10 h-10 shrink-0">
+                  <img
+                    src={user.avatar}
+                    alt={user.username}
+                    className="object-cover w-full h-full rounded-full ring-1 ring-slate-200"
+                  />
                 </div>
-
-                {/* Action Buttons (Block & Unblock) */}
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="py-2 px-3 bg-warning hover:bg-warning-hover active:scale-[0.98] text-white text-xs font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer w-18"
-                  >
-                    Block
-                  </button>
-
-                  <button
-                    type="button"
-                    className="py-2 px-3 bg-brand-accent hover:bg-hover-blue active:scale-[0.98] text-white text-xs font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer w-18"
-                  >
-                    Unblock
-                  </button>
+                <div className="flex flex-col min-w-0">
+                  <p className="text-sm font-semibold leading-tight truncate cursor-pointer text-hover-blue hover:underline">
+                    {user.username}
+                  </p>
+                  <span className="text-xs text-subtext truncate mt-0.5">
+                    {user.fullName}
+                  </span>
                 </div>
               </div>
-              <hr className="my-1 border-gray-100" />
-            </>
-          ))}
+
+              {/* Action Button */}
+              <div className="flex items-center shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleUnblock(user.id)}
+                  className="py-1.5 px-3 sm:px-4 text-xs font-semibold rounded-lg shadow-sm transition-all duration-200 active:scale-95 bg-brand-accent hover:bg-hover-blue text-white"
+                >
+                  Unblock
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          /* Empty State */
+          <div className="py-8 text-center">
+            <p className="text-xs sm:text-sm text-subtext">
+              You haven't blocked any users yet.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bookmark, Grid3x3, Link2, RefreshCw, SquarePlay } from "lucide-react";
+import { Bookmark, Grid3x3, Link2, SquarePlay } from "lucide-react";
 import Reels from "./../components/Profile/Reels";
 import Posts from "./../components/Profile/Posts";
 import BookMarks from "./../components/Profile/BookMarks";
@@ -46,13 +46,15 @@ const PersonalProfile = () => {
     axios
       .get(`http://localhost:3000/api/user/${id}`)
       .then((response) => {
-        setUserData(response?.data.user_details);
+        setUserData(response?.data?.user_details);
       })
-      .catch((error) => {})
+      .catch((error) => {
+        console.error("Error fetching profile details:", error);
+      })
       .finally(() => {
         setTimeout(() => {
           setLoading(false);
-        }, 2500);
+        }, 1200);
       });
   };
 
@@ -63,21 +65,23 @@ const PersonalProfile = () => {
 
   // ---- UseEffects ----
   useEffect(() => {
-    getDetails();
-  }, []);
+    if (id) {
+      getDetails();
+    }
+  }, [id]);
 
   return (
-    <div className="flex items-start justify-center w-full py-6 bg-slate-50">
+    <div className="flex items-start justify-center w-full min-h-screen bg-slate-50">
       {/* Profile Container */}
       <div className="flex flex-col items-center w-full max-w-2xl">
         {/* Profile Card */}
-        <div className="items-start w-full p-6 text-center bg-white border shadow-sm gap-3.5 sm:text-start sm:flex rounded-2xl border-slate-200">
+        <div className="flex flex-col items-center w-full gap-4 p-4 text-center bg-white border shadow-sm sm:p-6 sm:flex-row sm:items-start sm:gap-6 sm:text-left rounded-2xl border-slate-200">
           {/* Avatar Section */}
           <div className="shrink-0">
             {loading ? (
-              <div className="w-24 h-24 bg-gray-200 rounded-full" />
+              <div className="w-20 h-20 mx-auto rounded-full sm:w-28 sm:h-28 bg-slate-200 animate-pulse" />
             ) : (
-              <div className="w-24 h-24 mx-auto overflow-hidden border rounded-full sm:mx-0 sm:w-28 sm:h-28 border-slate-200 ring-2 ring-slate-100">
+              <div className="w-20 h-20 mx-auto overflow-hidden border rounded-full sm:w-28 sm:h-28 border-slate-200 ring-2 ring-slate-100">
                 <img
                   src={
                     userData?.profilePic ||
@@ -91,34 +95,34 @@ const PersonalProfile = () => {
           </div>
 
           {/* Details Section */}
-          <div className="flex flex-col justify-between flex-1 min-w-0 pt-1 pb-4">
+          <div className="flex flex-col justify-between flex-1 w-full min-w-0 pt-1 pb-2">
             {/* Identity */}
-            <div>
+            <div className="flex flex-col items-center sm:items-start">
               {loading ? (
-                <div className="h-5 bg-gray-200 rounded w-50 animate-pulse" />
+                <div className="w-40 h-6 rounded bg-slate-200 animate-pulse" />
               ) : (
-                <h1 className="text-xl font-bold tracking-tight truncate sm:text-2xl text-slate-900">
+                <h1 className="text-lg font-bold tracking-tight truncate sm:text-2xl text-slate-900">
                   {userData?.username || "unknown"}
                 </h1>
               )}
 
               {loading ? (
-                <div className="h-5 mt-3 bg-gray-200 rounded w-50 animate-pulse" />
+                <div className="w-32 h-4 mt-2 rounded bg-slate-200 animate-pulse" />
               ) : (
-                <p className="text-sm font-medium text-slate-500 mt-0.5">
-                  {userData?.fname + " " + userData?.lname || "Unkown"}
+                <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
+                  {userData ? `${userData.fname} ${userData.lname}` : "Unknown"}
                 </p>
               )}
             </div>
 
             {/* Stats */}
-            <div className="flex items-center justify-center gap-6 py-3 my-4 sm:justify-start border-y border-slate-100">
-              <div className="flex items-baseline gap-1.5">
+            <div className="flex items-center justify-around w-full gap-4 py-3 my-3 sm:justify-start sm:gap-6 sm:my-4 border-y border-slate-100">
+              <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-1 sm:gap-1.5">
                 {loading ? (
-                  <div className="h-5 bg-gray-200 rounded w-15 animate-pulse" />
+                  <div className="w-12 h-5 rounded bg-slate-200 animate-pulse" />
                 ) : (
                   <>
-                    <span className="text-base font-bold text-slate-900">
+                    <span className="text-sm font-bold sm:text-base text-slate-900">
                       {postsCount}
                     </span>
                     <span className="text-xs font-medium text-slate-500">
@@ -128,12 +132,12 @@ const PersonalProfile = () => {
                 )}
               </div>
 
-              <div className="flex items-baseline gap-1.5">
+              <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-1 sm:gap-1.5">
                 {loading ? (
-                  <div className="h-5 bg-gray-200 rounded w-15 animate-pulse" />
+                  <div className="w-12 h-5 rounded bg-slate-200 animate-pulse" />
                 ) : (
                   <>
-                    <span className="text-base font-bold text-slate-900">
+                    <span className="text-sm font-bold sm:text-base text-slate-900">
                       {followersCount}
                     </span>
                     <span className="text-xs font-medium text-slate-500">
@@ -143,12 +147,12 @@ const PersonalProfile = () => {
                 )}
               </div>
 
-              <div className="flex items-baseline gap-1.5">
+              <div className="flex flex-col sm:flex-row items-center sm:items-baseline gap-1 sm:gap-1.5">
                 {loading ? (
-                  <div className="h-5 bg-gray-200 rounded w-15 animate-pulse" />
+                  <div className="w-12 h-5 rounded bg-slate-200 animate-pulse" />
                 ) : (
                   <>
-                    <span className="text-base font-bold text-slate-900">
+                    <span className="text-sm font-bold sm:text-base text-slate-900">
                       {followingCount}
                     </span>
                     <span className="text-xs font-medium text-slate-500">
@@ -161,13 +165,13 @@ const PersonalProfile = () => {
 
             {/* Description */}
             {loading ? (
-              <div className="bg-gray-200 rounded h-7 w-100 animate-pulse" />
+              <div className="w-full h-12 my-1 rounded bg-slate-200 animate-pulse" />
             ) : userData?.description ? (
-              <div className="text-sm leading-relaxed text-slate-700">
+              <div className="text-xs leading-relaxed sm:text-sm text-slate-700">
                 <p className={!isExpanded ? "line-clamp-2" : ""}>
-                  {userData?.description}
+                  {userData.description}
                 </p>
-                {userData?.description.length > 150 && (
+                {userData.description.length > 150 && (
                   <button
                     type="button"
                     onClick={() => setIsExpanded(!isExpanded)}
@@ -178,39 +182,40 @@ const PersonalProfile = () => {
                 )}
               </div>
             ) : (
-              <p className="text-sm italic text-slate-400">
+              <p className="text-xs italic sm:text-sm text-slate-400">
                 No description available.
               </p>
             )}
 
-            <div className="h-[0.5px] my-3 bg-slate-100" />
+            <div className="h-[1px] my-3 bg-slate-100 w-full" />
 
             {/* Links Section */}
             {loading ? (
-              <div className="bg-gray-200 rounded h-7 w-100 animate-pulse" />
-            ) : typeof userData?.links !== "undefined" &&
-              userData?.links?.length > 0 ? (
+              <div className="w-3/4 h-5 rounded bg-slate-200 animate-pulse" />
+            ) : Array.isArray(userData?.links) && userData.links.length > 0 ? (
               <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                 {userData.links.map((link, i) => (
                   <Link
                     key={i}
                     to={link}
                     target="_blank"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-xs transition-colors duration-150"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-[200px] sm:max-w-xs transition-colors duration-150"
                   >
-                    <Link2 size={14} color="#64748b" />
+                    <Link2 size={14} className="shrink-0 text-slate-500" />
                     <span className="truncate">{link}</span>
                   </Link>
                 ))}
               </div>
             ) : (
-              <p className="text-sm italic text-slate-400">No links added.</p>
+              <p className="text-xs italic sm:text-sm text-slate-400">
+                No links added.
+              </p>
             )}
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center justify-between w-full mt-8 border-b border-slate-200">
+        <div className="flex items-center justify-between w-full mt-6 border-b sm:mt-8 border-slate-200">
           {navigation_tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = tabToggle === tab.key;
@@ -219,13 +224,17 @@ const PersonalProfile = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setTabToggle(tab.key)}
-                className={`flex-1 pb-3 flex items-center justify-center gap-2 text-sm font-medium transition-all duration-200 border-b-2 -mb-px ${
+                className={`flex-1 pb-3 flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium transition-all duration-200 border-b-2 -mb-px ${
                   isActive
                     ? "text-blue-600 border-blue-600 font-semibold"
                     : "text-slate-500 border-transparent hover:text-slate-900 hover:border-slate-300"
                 }`}
               >
-                <Icon size={18} strokeWidth={isActive ? 2 : 1.75} />
+                <Icon
+                  size={18}
+                  strokeWidth={isActive ? 2 : 1.75}
+                  className="shrink-0"
+                />
                 <span>{tab.label}</span>
               </button>
             );
@@ -233,7 +242,7 @@ const PersonalProfile = () => {
         </div>
 
         {/* Tab Content Area */}
-        <div className="flex justify-center w-full mt-6">
+        <div className="flex justify-center w-full mt-4 sm:mt-6">
           {tabToggle === "posts" && <Posts />}
           {tabToggle === "reels" && <Reels />}
           {tabToggle === "saved" && <BookMarks />}

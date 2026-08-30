@@ -1,46 +1,32 @@
 import { useEffect, useRef, useState } from "react";
-import SampleVideo from "../assets/sample.mp4";
-import SampleVideo2 from "../assets/sample2.mp4";
-import { Volume2, VolumeX, Play, Pause, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Volume2, VolumeX, Play, Pause, X, Camera, Plus } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const StoriesPage = () => {
-  // ---- Arrays ----
-  const stories = [
-    {
-      id: 1,
-      video_id: "qasw36210jsc",
-      video_url: SampleVideo,
-      user: {
-        username: "ahad.shk.0",
-        avatar:
-          "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
-      },
-    },
-    {
-      id: 2,
-      video_id: "qasw36210jsd",
-      video_url: SampleVideo2,
-      user: {
-        username: "ahad.shk.0",
-        avatar:
-          "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
-      },
-    },
-  ];
+  // ---- Hooks (Top Level) ----
+  const location = useLocation();
+  const navigate = useNavigate();
+  const videoRef = useRef(null);
 
   // ---- UseStates ----
+  const [userStories, setUserStories] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
 
-  // ---- UseRefs & Navigation ----
-  const videoRef = useRef(null);
-  const navigate = useNavigate();
-  const currentStory = stories[currentIndex];
+  const currentStory = userStories[currentIndex];
 
-  // ---- Functions ----
+  // ---- Handlers ----
+  const handleUserNameFilter = () => {
+    const raw_path = location.pathname.split("/");
+    const raw_username = raw_path[2] || "";
+    const username = raw_username.replace("@", "");
+
+    return username;
+  };
+
   const handleTimeUpdate = () => {
     if (videoRef.current && videoRef.current.duration) {
       const currentProgress =
@@ -50,7 +36,7 @@ const StoriesPage = () => {
   };
 
   const handleNext = () => {
-    if (currentIndex < stories.length - 1) {
+    if (currentIndex < userStories.length - 1) {
       setCurrentIndex((prev) => prev + 1);
       setProgress(0);
     } else {
@@ -92,14 +78,72 @@ const StoriesPage = () => {
     }
   };
 
+  // Maps positioning strings from API payload to Tailwind classes
+  const getPositionClasses = (vPos, hPos) => {
+    let vertical = "justify-center";
+    let horizontal = "items-center";
+
+    if (vPos === "top") vertical = "justify-start";
+    if (vPos === "bottom") vertical = "justify-end";
+
+    if (hPos === "left") horizontal = "items-start";
+    if (hPos === "right") horizontal = "items-end";
+
+    return `${vertical} ${horizontal}`;
+  };
+
+  // ---- Stories Fetch ----
+  const storiesFetched = () => {
+    const username = handleUserNameFilter();
+    axios
+      .get(`http://localhost:3000/api/user/story/${username}`)
+      .then((response) => {
+        if (response?.data?.success && response?.data?.stories) {
+          setUserStories(response.data.stories);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   // ---- UseEffects ----
+  // Handles video loading and autoplay safe execution
   useEffect(() => {
-    if (videoRef.current) {
+    setProgress(0);
+    setIsPlaying(true);
+
+    if (currentStory?.mediaType === "video" && videoRef.current) {
       videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
-      setIsPlaying(true);
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => console.log("Autoplay prevented:", err));
+      }
     }
-  }, [currentIndex]);
+  }, [currentIndex, currentStory]);
+
+  // Handles progress timer for static image stories (5s per story)
+  useEffect(() => {
+    let interval;
+    if (currentStory?.mediaType !== "video" && isPlaying) {
+      const duration = 5000;
+      const step = 50;
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            handleNext();
+            return 0;
+          }
+          return prev + (step / duration) * 100;
+        });
+      }, step);
+    }
+    return () => clearInterval(interval);
+  }, [currentIndex, isPlaying, currentStory]);
+
+  useEffect(() => {
+    storiesFetched();
+  }, []);
 
   return (
     <div className="relative flex items-center justify-center h-screen overflow-hidden select-none bg-slate-950">
@@ -116,89 +160,156 @@ const StoriesPage = () => {
       </div>
 
       {/* Main Story Container */}
-      <div
-        className="relative h-[90%] w-full max-w-sm rounded-2xl overflow-hidden bg-slate-900 shadow-2xl cursor-pointer border border-white/10"
-        onClick={handleTap}
-      >
-        {/* Active Story Video */}
-        <video
-          ref={videoRef}
-          src={currentStory?.video_url}
-          className="object-cover w-full h-full"
-          autoPlay
-          muted={isMuted}
-          playsInline
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={handleNext}
-        />
-
-        {/* Top Header & Story Progress Overlay */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex flex-col gap-2 p-3 bg-linear-to-b from-slate-950/80 via-slate-950/40 to-transparent">
-          {/* Progress Bars Row */}
-          <div className="flex w-full space-x-1">
-            {stories.map((story, index) => {
-              let barWidth = "0%";
-              if (index < currentIndex) {
-                barWidth = "100%";
-              } else if (index === currentIndex) {
-                barWidth = `${progress}%`;
+      {userStories?.length > 0 ? (
+        <div
+          className="relative h-[90%] w-full max-w-sm rounded-2xl overflow-hidden bg-slate-900 shadow-2xl cursor-pointer border border-white/10"
+          onClick={handleTap}
+        >
+          {/* Active Story Media */}
+          {currentStory?.mediaType === "video" ? (
+            <video
+              key={currentStory?._id || currentStory?.story}
+              ref={videoRef}
+              src={
+                currentStory?.story?.startsWith("data:video")
+                  ? currentStory?.story
+                  : `data:video/mp4;base64,${currentStory?.story}`
               }
+              className="object-cover w-full h-full"
+              autoPlay
+              muted={isMuted}
+              playsInline
+              onTimeUpdate={handleTimeUpdate}
+              onEnded={handleNext}
+            />
+          ) : (
+            <img
+              src={
+                currentStory?.story?.startsWith("data:image")
+                  ? currentStory?.story
+                  : `data:image/png;base64,${currentStory?.story}`
+              }
+              alt="Story content"
+              className="object-cover w-full h-full"
+            />
+          )}
 
-              return (
-                <div
-                  key={story.id}
-                  className="flex-1 h-1 overflow-hidden rounded-full bg-white/30"
-                >
-                  <div
-                    className="h-full transition-all duration-75 ease-linear bg-white"
-                    style={{ width: barWidth }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Profile Details & Media Controls */}
-          <div className="flex items-center justify-between mt-1">
-            <div className="flex items-center min-w-0 space-x-2">
-              <img
-                src={
-                  currentStory?.user?.avatar ||
-                  "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                }
-                alt={currentStory?.user?.username || "User avatar"}
-                className="object-cover w-8 h-8 border rounded-full border-white/40 shrink-0"
-              />
-              <span className="text-sm font-semibold text-white truncate drop-shadow">
-                {currentStory?.user?.username || "user"}
+          {/* Story Text Overlay with dynamic background */}
+          {currentStory?.storyText && (
+            <div
+              className={`absolute inset-0 p-6 flex flex-col pointer-events-none z-10 ${getPositionClasses(
+                currentStory?.verticalPos,
+                currentStory?.horizontalPos,
+              )}`}
+            >
+              <span
+                style={{
+                  color: currentStory?.textColor || "#ffffff",
+                  backgroundColor:
+                    currentStory?.hasBackground === true ||
+                    currentStory?.hasBackground === "true"
+                      ? currentStory?.bgColor || "#000000"
+                      : "transparent",
+                }}
+                className={`inline-block px-3 py-1.5 rounded-xl font-semibold text-sm wrap-break-word max-w-full ${
+                  currentStory?.hasBackground === true ||
+                  currentStory?.hasBackground === "true"
+                    ? "backdrop-blur-md shadow-md"
+                    : "drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+                }`}
+              >
+                {currentStory?.storyText}
               </span>
             </div>
+          )}
 
-            {/* Sound & Playback Controls */}
-            <div className="flex items-center space-x-2 text-white">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMuted(!isMuted);
-                }}
-                className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
-                aria-label={isMuted ? "Unmute" : "Mute"}
-              >
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
-              <button
-                type="button"
-                onClick={togglePlayPause}
-                className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
-                aria-label={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? <Pause size={18} /> : <Play size={18} />}
-              </button>
+          {/* Top Header & Story Progress Overlay */}
+          <div className="absolute top-0 left-0 right-0 z-20 flex flex-col gap-2 p-3 bg-linear-to-b from-slate-950/80 via-slate-950/40 to-transparent">
+            {/* Progress Bars Row */}
+            <div className="flex w-full space-x-1">
+              {userStories.map((story, index) => {
+                let barWidth = "0%";
+                if (index < currentIndex) {
+                  barWidth = "100%";
+                } else if (index === currentIndex) {
+                  barWidth = `${progress}%`;
+                }
+
+                return (
+                  <div
+                    key={story._id || index}
+                    className="flex-1 h-1 overflow-hidden rounded-full bg-white/30"
+                  >
+                    <div
+                      className="h-full transition-all duration-75 ease-linear bg-white"
+                      style={{ width: barWidth }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Profile Details & Media Controls */}
+            <div className="flex items-center justify-between mt-1">
+              <Link to={`/en/${currentStory?.username}`}>
+                <div className="flex items-center min-w-0 space-x-2">
+                  <img
+                    src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                    alt={currentStory?.username || "User avatar"}
+                    className="object-cover w-8 h-8 border rounded-full border-white/40 shrink-0"
+                  />
+                  <span className="text-sm font-semibold text-white truncate drop-shadow">
+                    {currentStory?.username || "user"}
+                  </span>
+                </div>
+              </Link>
+
+              {/* Sound & Playback Controls */}
+              {currentStory?.mediaType === "video" && (
+                <div className="flex items-center space-x-2 text-white">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMuted(!isMuted);
+                    }}
+                    className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+                    aria-label={isMuted ? "Unmute" : "Mute"}
+                  >
+                    {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={togglePlayPause}
+                    className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
+                    aria-label={isPlaying ? "Pause" : "Play"}
+                  >
+                    {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-[90%] w-full max-w-sm rounded-2xl bg-slate-900/60 border border-white/10 p-6 text-center backdrop-blur-md">
+          <div className="relative flex items-center justify-center mb-4">
+            <div className="p-4 border shadow-xl rounded-2xl bg-slate-800/80 border-slate-700/60 text-slate-400">
+              <Camera size={36} strokeWidth={1.5} />
+            </div>
+            <div className="absolute p-1 text-white rounded-full shadow-md -bottom-1 -right-1 bg-brand-accent">
+              <Plus size={14} strokeWidth={2.5} />
+            </div>
+          </div>
+
+          <h3 className="text-base font-bold tracking-wide text-white">
+            No stories posted yet
+          </h3>
+          <p className="mt-1 text-xs leading-relaxed text-slate-400 max-w-55">
+            Check back later or share a moment with your followers.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

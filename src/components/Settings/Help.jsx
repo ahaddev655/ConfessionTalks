@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Mail, MessageSquare, Send, HelpCircle, Check } from "lucide-react";
 import InputItem from "../InputItem";
+
 const Help = () => {
+  // ---- UseStates ----
   const [formData, setFormData] = useState({
     subject: "",
     email: "",
@@ -9,6 +11,7 @@ const Help = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // ---- Handlers ----
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -27,14 +30,14 @@ const Help = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full max-w-2xl px-4 py-6 mx-auto sm:px-6">
       {/* Heading */}
-      <div>
-        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight text-heading-text">
+      <div className="space-y-1">
+        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight sm:text-2xl text-heading-text">
           Help & Support
-          <HelpCircle className="w-5 h-5 text-blue-600" />
+          <HelpCircle className="w-5 h-5 text-blue-600 shrink-0" />
         </h1>
-        <p className="mt-1 text-xs text-subtext">
+        <p className="text-xs sm:text-sm text-subtext">
           Have a question or running into an issue? Let us know how we can help.
         </p>
       </div>
@@ -44,7 +47,7 @@ const Help = () => {
       {/* Help Form */}
       <form onSubmit={handleSubmit} className="w-full space-y-4">
         {/* Email & Subject Inputs */}
-        <div className="flex flex-col items-center justify-center w-full gap-4 sm:flex-row">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InputItem
             Icon={Mail}
             changeFunct={handleChange}
@@ -80,7 +83,7 @@ const Help = () => {
               placeholder="Provide details about what you need assistance with..."
               value={formData.message}
               onChange={handleChange}
-              className="w-full text-sm font-medium transition-all py-2.5 pr-3 pl-3 border rounded-xl border-border-color focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent text-body-text resize-none max-h-75"
+              className="w-full text-sm font-medium transition-all py-2.5 px-3 border rounded-xl border-border-color focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent text-body-text resize-none min-h-30 max-h-75 scrollbar-thin"
             />
           </div>
         </div>
@@ -89,7 +92,7 @@ const Help = () => {
         <div className="flex items-center justify-end pt-2">
           <button
             type="submit"
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 active:scale-95 shadow-sm text-white ${
+            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 active:scale-95 shadow-sm text-white ${
               isSubmitted
                 ? "bg-emerald-600"
                 : "bg-brand-accent hover:bg-hover-blue"
