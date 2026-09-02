@@ -46,7 +46,36 @@ const PersonalProfile = () => {
     axios
       .get(`http://localhost:3000/api/user/${id}`)
       .then((response) => {
-        setUserData(response?.data?.user_details);
+        const data = response?.data?.user_details;
+
+        setUserData({
+          fname: data?.fname || "",
+          lname: data?.lname || "",
+          username: data?.username || "",
+          email: data?.email || "",
+          profilePic: data?.profilePic?.startsWith("data:image")
+            ? data?.profilePic
+            : data?.profilePic
+              ? `data:image/png;base64,${data?.profilePic}`
+              : "",
+          gender: data?.gender || "",
+          description: data?.description || "",
+          links: (() => {
+            let raw = data?.links;
+            if (typeof raw === "string") {
+              try {
+                raw = JSON.parse(raw);
+              } catch {
+                raw = [];
+              }
+            }
+            return Array.isArray(raw)
+              ? raw.map((item, index) =>
+                  typeof item === "string" ? { id: index, url: item } : item,
+                )
+              : [];
+          })(),
+        });
       })
       .catch((error) => {
         console.error("Error fetching profile details:", error);
@@ -187,24 +216,27 @@ const PersonalProfile = () => {
               </p>
             )}
 
-            <div className="h-[1px] my-3 bg-slate-100 w-full" />
+            <div className="w-full h-px my-3 bg-slate-100" />
 
             {/* Links Section */}
             {loading ? (
               <div className="w-3/4 h-5 rounded bg-slate-200 animate-pulse" />
             ) : Array.isArray(userData?.links) && userData.links.length > 0 ? (
               <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-                {userData.links.map((link, i) => (
-                  <Link
-                    key={i}
-                    to={link}
-                    target="_blank"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-[200px] sm:max-w-xs transition-colors duration-150"
-                  >
-                    <Link2 size={14} className="shrink-0 text-slate-500" />
-                    <span className="truncate">{link}</span>
-                  </Link>
-                ))}
+                {userData.links.map((link, i) => {
+                  const url = typeof link === "string" ? link : link?.url;
+                  return (
+                    <Link
+                      key={link?.id || i}
+                      to={url}
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-50 sm:max-w-xs transition-colors duration-150"
+                    >
+                      <Link2 size={14} className="shrink-0 text-slate-500" />
+                      <span className="truncate">{url}</span>
+                    </Link>
+                  );
+                })}
               </div>
             ) : (
               <p className="text-xs italic sm:text-sm text-slate-400">

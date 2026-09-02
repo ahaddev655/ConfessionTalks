@@ -106,7 +106,11 @@ const MainSidebar = () => {
             fname: data.fname,
             lname: data.lname,
             username: data.username,
-            profilePic: data.profilePic,
+            profilePic: data?.profilePic?.startsWith("data:image")
+              ? data?.profilePic
+              : data?.profilePic
+                ? `data:image/png;base64,${data?.profilePic}`
+                : "",
           });
         }
       })

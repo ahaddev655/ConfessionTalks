@@ -9,8 +9,10 @@ import {
   Link2,
   Plus,
   X,
+  RotateCw,
 } from "lucide-react";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const ProfileSettings = () => {
   // ---- Variables ----
@@ -29,6 +31,7 @@ const ProfileSettings = () => {
   });
 
   const [newLink, setNewLink] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // ---- Refs ----
   const avatarRef = useRef();
@@ -55,20 +58,29 @@ const ProfileSettings = () => {
 
     setPersonalData((prev) => ({
       ...prev,
-      links: [...(prev.links || []), { id: Date.now(), url: newLink.trim() }],
+      links: [...(prev.links || []), { url: newLink.trim() }],
     }));
     setNewLink("");
   };
 
-  const handleRemoveLink = (id) => {
+  const handleRemoveLink = (linkId) => {
     setPersonalData((prev) => ({
       ...prev,
-      links: prev.links.filter((link) => link.id !== id),
+      links: prev.links.filter((link) => link.id !== linkId),
     }));
+  };
+
+  const handleResetDefaults = () => {
+    getDetails();
   };
 
   // ---- Functions ----
   const getDetails = () => {
+    if (!id) {
+      toast.error("User ID not found in local storage.");
+      return;
+    }
+
     axios
       .get(`http://localhost:3000/api/user/${id}`)
       .then((response) => {
@@ -79,13 +91,78 @@ const ProfileSettings = () => {
           lname: data?.lname || "",
           username: data?.username || "",
           email: data?.email || "",
-          profilePic: data?.profilePic || "",
+          profilePic: data?.profilePic?.startsWith("data:image")
+            ? data?.profilePic
+            : data?.profilePic
+              ? `data:image/png;base64,${data?.profilePic}`
+              : "",
           gender: data?.gender || "",
           description: data?.description || "",
-          links: data?.links || [],
+          links: (() => {
+            let raw = data?.links;
+            if (typeof raw === "string") {
+              try {
+                raw = JSON.parse(raw);
+              } catch {
+                raw = [];
+              }
+            }
+            return Array.isArray(raw)
+              ? raw.map((item, index) =>
+                  typeof item === "string" ? { id: index, url: item } : item,
+                )
+              : [];
+          })(),
         });
       })
-      .catch(() => {});
+      .catch((error) => {
+        toast.error("Failed to load user details.");
+      });
+  };
+
+  const updateProfile = () => {
+    if (loading) return;
+
+    if (!id) {
+      toast.error("User ID is missing.");
+      return;
+    }
+
+    if (!personalData.fname?.trim()) return alert("First name is required.");
+    if (!personalData.lname?.trim()) return alert("Last name is required.");
+    if (!personalData.username?.trim()) return alert("Username is required.");
+    if (!personalData.email?.trim()) return alert("Email is required.");
+    if (!personalData.gender?.trim()) return alert("Gender is required.");
+    if (!personalData.description?.trim())
+      return alert("Description is required.");
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("fname", personalData.fname);
+    formData.append("lname", personalData.lname);
+    formData.append("username", personalData.username);
+    formData.append("email", personalData.email);
+    formData.append("gender", personalData.gender);
+    formData.append("description", personalData.description);
+
+    formData.append("links", JSON.stringify(personalData.links));
+
+    if (avatarRef.current?.files?.[0]) {
+      formData.append("profilePic", avatarRef.current.files[0]);
+    }
+
+    axios
+      .put(`http://localhost:3000/api/user/update-profile/${id}`, formData)
+      .then(() => {
+        toast.success("Profile updated successfully!");
+      })
+      .catch(() => {
+        toast.error("Failed to update profile.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   // ---- UseEffects ----
@@ -95,7 +172,6 @@ const ProfileSettings = () => {
 
   return (
     <div className="w-full max-w-2xl px-4 py-6 mx-auto sm:px-6">
-      {/* Heading */}
       <div className="space-y-1">
         <h1 className="text-xl font-bold tracking-tight sm:text-2xl text-heading-text">
           Edit Your Profile
@@ -107,9 +183,13 @@ const ProfileSettings = () => {
 
       <hr className="my-5 border-border-color" />
 
-      {/* Form */}
-      <form className="w-full space-y-6" onSubmit={(e) => e.preventDefault()}>
-        {/* Profile Picture */}
+      <form
+        className="w-full space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          updateProfile();
+        }}
+      >
         <div className="relative flex flex-col items-center justify-center">
           <div
             className="relative cursor-pointer group"
@@ -137,16 +217,13 @@ const ProfileSettings = () => {
               />
             </div>
 
-            {/* Camera Overlay Icon */}
             <div className="absolute bottom-0 right-0 grid transition-transform duration-200 rounded-full shadow-md w-7 h-7 sm:w-8 sm:h-8 translate-x-1/4 translate-y-1/4 place-items-center bg-brand-accent ring-2 ring-white group-hover:scale-110">
               <Camera color="white" strokeWidth={2.25} size={15} />
             </div>
           </div>
         </div>
 
-        {/* Inputs Container */}
         <div className="space-y-4">
-          {/* Firstname / Lastname */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <InputItem
               Icon={User}
@@ -166,7 +243,6 @@ const ProfileSettings = () => {
             />
           </div>
 
-          {/* Username / Email */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <InputItem
               identity={"username"}
@@ -185,7 +261,6 @@ const ProfileSettings = () => {
             />
           </div>
 
-          {/* Gender */}
           <InputItem
             Icon={Mars}
             identity={"gender"}
@@ -195,7 +270,6 @@ const ProfileSettings = () => {
             changeFunct={handleInputChange}
           />
 
-          {/* Custom Link Manager */}
           <div className="flex flex-col gap-1.5 w-full">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold tracking-wider uppercase text-body-text">
@@ -206,7 +280,6 @@ const ProfileSettings = () => {
               </span>
             </div>
 
-            {/* Add Link Field */}
             {(personalData?.links?.length || 0) < 4 && (
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <div className="relative w-full">
@@ -239,7 +312,6 @@ const ProfileSettings = () => {
               </div>
             )}
 
-            {/* Added Links List */}
             {personalData?.links?.length > 0 && (
               <ul className="flex flex-col gap-2 mt-2">
                 {personalData?.links.map((link) => (
@@ -249,7 +321,8 @@ const ProfileSettings = () => {
                   >
                     <div className="flex items-center min-w-0 gap-2 pr-2">
                       <Link2 size={14} className="text-slate-400 shrink-0" />
-                      <span className="truncate">{link.url}</span>
+                      {/* ✅ Safe property access */}
+                      <span className="truncate">{link.url || link}</span>
                     </div>
                     <button
                       type="button"
@@ -264,7 +337,6 @@ const ProfileSettings = () => {
             )}
           </div>
 
-          {/* Description */}
           <div className="flex flex-col gap-1.5 w-full">
             <label
               htmlFor="description"
@@ -292,19 +364,20 @@ const ProfileSettings = () => {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-end">
           <button
             type="button"
+            onClick={handleResetDefaults}
             className="w-full sm:w-auto px-5 py-2.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-xl transition-all duration-200 active:scale-95"
           >
             Reset Defaults
           </button>
           <button
             type="submit"
-            className="w-full sm:w-auto px-5 py-2.5 text-xs font-semibold text-white bg-brand-accent hover:bg-hover-blue rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
+            className="w-full sm:w-auto px-5 py-2.5 text-xs font-semibold text-white bg-brand-accent hover:bg-hover-blue rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 flex items-center justify-center gap-2"
           >
-            Save Changes
+            {loading && <RotateCw className="w-4 h-4 animate-spin" />}
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </form>
