@@ -197,7 +197,9 @@ const PersonalProfile = () => {
               <div className="w-full h-12 my-1 rounded bg-slate-200 animate-pulse" />
             ) : userData?.description ? (
               <div className="text-xs leading-relaxed sm:text-sm text-slate-700">
-                <p className={!isExpanded ? "line-clamp-2" : ""}>
+                <p
+                  className={`wrap-break-word ${!isExpanded ? "line-clamp-2 overflow-hidden" : ""}`}
+                >
                   {userData.description}
                 </p>
                 {userData.description.length > 150 && (

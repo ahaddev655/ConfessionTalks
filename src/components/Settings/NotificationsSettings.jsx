@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const NotificationsSettings = () => {
+  // ---- Variables ----
+  const userId = localStorage.getItem("cota_id");
+
   // ---- Initial State ----
   const defaultSettings = {
     news: false,
@@ -52,6 +56,54 @@ const NotificationsSettings = () => {
   const handleResetDefaults = () => {
     setNotificationsData(defaultSettings);
   };
+
+  // ---- Functions ----
+  const notificationDetails = () => {
+    axios
+      .get(`http://localhost:3000/api/user/${userId}`)
+      .then((response) => {
+        const data = response.data.user_details;
+
+        setNotificationsData({
+          news: Boolean(data?.news),
+          support: Boolean(data?.support),
+          product: Boolean(data?.product),
+          reminder: Boolean(data?.reminder),
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching notification details:", error);
+      });
+  };
+
+  const updateNotificationSettings = () => {
+    const notifications = {
+      news: notificationsData.news,
+      support: notificationsData.support,
+      product: notificationsData.product,
+      reminder: notificationsData.reminder,
+    };
+
+    axios
+      .put(
+        `http://localhost:3000/api/user/update-notifications/${userId}`,
+        notifications,
+      )
+      .then((response) => {
+        console.log(
+          "Notification settings updated successfully:",
+          response.data,
+        );
+      })
+      .catch((error) => {
+        console.error("Error updating notification settings:", error);
+      });
+  };
+
+  // ---- UseEffects ----
+  useEffect(() => {
+    notificationDetails();
+  }, []);
 
   return (
     <div className="w-full max-w-2xl px-4 py-6 mx-auto sm:px-6">
@@ -118,6 +170,7 @@ const NotificationsSettings = () => {
           </button>
           <button
             type="button"
+            onClick={updateNotificationSettings}
             className="w-full px-5 py-2.5 text-xs font-semibold text-white bg-brand-accent hover:bg-hover-blue rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 sm:w-auto"
           >
             Save Changes

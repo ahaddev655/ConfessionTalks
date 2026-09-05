@@ -164,13 +164,18 @@ const AuthenticationPage = () => {
       })
       .finally(() => {
         setTimeout(() => {
-          setLoading(false); // Deconfigure Loading
+          setLoading(false);
         }, 1500);
       });
   };
 
   // ---- UseEffects ----
   useEffect(() => {
+    setLoading(true);
+
+    if (loading) {
+      return;
+    }
     if (!id || id === null) {
       toast.error("ID not found");
       return;
@@ -182,7 +187,10 @@ const AuthenticationPage = () => {
       .then((response) => {
         navigate("/en");
       })
-      .catch((error) => {});
+      .catch((error) => {})
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   return (

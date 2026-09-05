@@ -1,13 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const PrivacySettings = () => {
+  // ---- Variables ----
+  const userId = localStorage.getItem("cota_id");
+
   // ---- UseStates ----
   const [isPrivate, setIsPrivate] = useState(true);
 
   // ---- Handlers ----
   const handleResetDefaults = () => {
-    setIsPrivate(true);
+    fetchPrivacySettings();
   };
+
+  // ---- Functions ----
+  const fetchPrivacySettings = () => {
+    axios
+      .get(`http://localhost:3000/api/user/${userId}`)
+      .then((response) => {
+        const data = response.data.user_details;
+
+        setIsPrivate(Boolean(data?.privateAccount));
+      })
+      .catch((error) => {
+        console.error("Error fetching privacy details:", error);
+        alert(
+          error?.response?.data?.error || "Error fetching privacy details.",
+        );
+      });
+  };
+
+  const updatePrivacySettings = () => {
+    axios
+      .put(`http://localhost:3000/api/user/update-privacy-settings/${userId}`, {
+        isPrivate,
+      })
+      .then((response) => {
+        console.log("Privacy settings updated successfully:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error updating privacy settings:", error);
+      });
+  };
+  // ---- useEffects ----
+  useEffect(() => {
+    fetchPrivacySettings();
+  }, []);
 
   return (
     <div className="w-full max-w-2xl px-4 py-6 mx-auto sm:px-6">
@@ -78,6 +116,7 @@ const PrivacySettings = () => {
           </button>
           <button
             type="button"
+            onClick={updatePrivacySettings}
             className="w-full px-5 py-2.5 text-xs font-semibold text-white bg-brand-accent hover:bg-hover-blue rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 sm:w-auto"
           >
             Save Changes
