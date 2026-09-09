@@ -1,10 +1,24 @@
 import React, { useRef, useState } from "react";
-import { Video, X, Hash, Plus, Play, Pause, FileText } from "lucide-react";
+import axios from "axios";
+import {
+  Video,
+  X,
+  Hash,
+  Plus,
+  Play,
+  Pause,
+  FileText,
+  Image as ImageIcon,
+} from "lucide-react";
 
 const Reel = () => {
   // ---- State ----
+  const [videoFile, setVideoFile] = useState(null);
   const [videoPreview, setVideoPreview] = useState("");
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -15,11 +29,30 @@ const Reel = () => {
   // ---- Refs ----
   const videoRef = useRef(null);
   const fileRef = useRef(null);
+  const thumbnailRef = useRef(null);
 
-  // ---- Video Handlers ----
+  // ---- Variables ----
+  const userId = localStorage.getItem("cota_id");
+
+  // ---- Reset Helper ----
+  const resetForm = () => {
+    setVideoFile(null);
+    setVideoPreview("");
+    setThumbnailFile(null);
+    setThumbnailPreview("");
+    setIsPlaying(false);
+    setFormData({ title: "", description: "" });
+    setHashtags([]);
+    setTagInput("");
+    if (fileRef.current) fileRef.current.value = "";
+    if (thumbnailRef.current) thumbnailRef.current.value = "";
+  };
+
+  // ---- Handlers ----
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      setVideoFile(file);
       const videoUrl = URL.createObjectURL(file);
       setVideoPreview(videoUrl);
       setIsPlaying(false);
@@ -27,6 +60,7 @@ const Reel = () => {
   };
 
   const handleRemoveVideo = () => {
+    setVideoFile(null);
     setVideoPreview("");
     setIsPlaying(false);
     if (fileRef.current) fileRef.current.value = "";
@@ -42,14 +76,28 @@ const Reel = () => {
     setIsPlaying(!isPlaying);
   };
 
-  // ---- Form Handlers ----
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setThumbnailFile(file);
+      const imageUrl = URL.createObjectURL(file);
+      setThumbnailPreview(imageUrl);
+    }
+  };
+
+  const handleRemoveThumbnail = () => {
+    setThumbnailFile(null);
+    setThumbnailPreview("");
+    if (thumbnailRef.current) thumbnailRef.current.value = "";
+  };
+
   const handleInputChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleAddHashtag = () => {
     if (!tagInput.trim()) return;
-    let formatted = tagInput.trim().replace(/^#+/, ""); // Strip leading '#' if typed
+    let formatted = tagInput.trim().replace(/^#+/, "");
     if (formatted && !hashtags.includes(formatted) && hashtags.length < 10) {
       setHashtags((prev) => [...prev, formatted]);
       setTagInput("");
@@ -60,13 +108,48 @@ const Reel = () => {
     setHashtags((prev) => prev.filter((tag) => tag !== tagToRemove));
   };
 
+  // ---- Functions ----
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!videoFile || !formData.title.trim()) return;
+
+    setIsSubmitting(true);
+
+    const payload = new FormData();
+    payload.append("video", videoFile);
+    payload.append("title", formData.title);
+    payload.append("description", formData.description);
+    payload.append("hashtags", JSON.stringify(hashtags));
+    if (thumbnailFile) {
+      payload.append("thumbnail", thumbnailFile);
+    }
+
+    axios
+      .post(`http://localhost:3000/api/user/add-reel/${userId}`, payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log("Post submitted successfully:", response.data);
+        resetForm();
+      })
+      .catch((error) => {
+        console.error("Error submitting post:", error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
+
   return (
     <div className="max-w-3xl p-4 mx-auto bg-white border shadow-sm sm:p-6 border-slate-200 rounded-2xl">
       <form
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={handleSubmit}
         className="grid grid-cols-1 gap-6 md:grid-cols-12"
       >
-        {/* Hidden File Input */}
+        {/* Hidden Inputs */}
         <input
           type="file"
           accept="video/*"
@@ -74,9 +157,16 @@ const Reel = () => {
           onChange={handleFileChange}
           className="hidden"
         />
+        <input
+          type="file"
+          accept="image/*"
+          ref={thumbnailRef}
+          onChange={handleThumbnailChange}
+          className="hidden"
+        />
 
         {/* Left Column: Vertical Video Upload / Preview */}
-        <div className="flex flex-col items-center md:col-span-5">
+        <div className="flex flex-col items-center gap-4 md:col-span-5">
           {!videoPreview ? (
             <div
               onClick={() => fileRef.current?.click()}
@@ -126,6 +216,43 @@ const Reel = () => {
               </button>
             </div>
           )}
+
+          {/* Thumbnail Selection Section */}
+          <div className="w-full">
+            <label className="block mb-1.5 text-xs font-semibold tracking-wider uppercase text-slate-600">
+              Custom Thumbnail (Optional)
+            </label>
+            {!thumbnailPreview ? (
+              <button
+                type="button"
+                onClick={() => thumbnailRef.current?.click()}
+                className="flex items-center justify-center gap-2 w-full h-12 border border-dashed rounded-xl border-slate-200 bg-slate-50 hover:bg-slate-100/60 text-xs font-medium text-slate-600 transition-colors"
+              >
+                <ImageIcon size={16} className="text-slate-400" />
+                Upload Cover Frame
+              </button>
+            ) : (
+              <div className="relative flex items-center justify-between p-2 border border-slate-200 rounded-xl bg-slate-50">
+                <div className="flex items-center gap-2.5 overflow-hidden">
+                  <img
+                    src={thumbnailPreview}
+                    alt="Thumbnail cover"
+                    className="object-cover w-10 h-10 rounded-lg shrink-0"
+                  />
+                  <span className="text-xs font-medium text-slate-700 truncate">
+                    {thumbnailFile?.name || "Thumbnail image"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveThumbnail}
+                  className="p-1 text-slate-400 hover:text-red-500 transition-colors shrink-0"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Column: Reel Details */}
@@ -237,10 +364,10 @@ const Reel = () => {
           <div className="flex justify-end pt-4 border-t border-slate-100">
             <button
               type="submit"
-              disabled={!videoPreview || !formData.title.trim()}
+              disabled={!videoPreview || !formData.title.trim() || isSubmitting}
               className="px-6 py-2.5 text-xs font-semibold text-white bg-brand-accent hover:bg-blue-600 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Share Reel
+              {isSubmitting ? "Sharing..." : "Share Reel"}
             </button>
           </div>
         </div>

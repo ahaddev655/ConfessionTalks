@@ -26,8 +26,17 @@ const MainSidebar = () => {
 
   // ---- Functions ----
   const handleLogout = () => {
-    localStorage.removeItem("ct_id");
-    navigate("/");
+    axios
+      .delete("http://localhost:3000/api/auth/logout", {
+        withCredentials: true,
+      })
+      .then((response) => {
+        localStorage.removeItem("cota_id");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Error during logout:", error);
+      });
   };
 
   // Close dropdown on outside click

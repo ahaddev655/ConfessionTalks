@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import InputItem from "../InputItem";
+import axios from "axios";
 
 const Post = () => {
   // ---- State ----
@@ -21,6 +22,15 @@ const Post = () => {
   });
   const [tagInput, setTagInput] = useState("");
   const [hashtags, setHashtags] = useState([]);
+
+  // ---- Variables ----
+  const isFormEmpty =
+    !selectedFile &&
+    !postData.title.trim() &&
+    hashtags.length === 0 &&
+    !postData.description.trim();
+
+  const userId = localStorage.getItem("cota_id");
 
   // ---- Refs ----
   const fileRef = useRef(null);
@@ -63,16 +73,53 @@ const Post = () => {
   const handleRemoveHashtag = (tagToRemove) => {
     setHashtags((prev) => prev.filter((tag) => tag !== tagToRemove));
   };
+  // ---- Functions ----
+  const resetForm = () => {
+    setSelectedFile(null);
+    setAvatarPreview("");
+    setPostData({ title: "", description: "" });
+    setHashtags([]);
+    setTagInput("");
+    if (fileRef.current) fileRef.current.value = "";
+  };
 
-  const isFormEmpty =
-    !selectedFile &&
-    !postData.title.trim() &&
-    hashtags.length === 0 &&
-    !postData.description.trim();
+  const handleSubmit = () => {
+    if (isFormEmpty) {
+      alert("Form is empty.");
+      return;
+    }
+    const payload = new FormData();
+    payload.append("title", postData.title);
+    payload.append("description", postData.description);
+    payload.append("hashtags", JSON.stringify(hashtags));
+    if (selectedFile) {
+      payload.append("media", selectedFile);
+    }
+
+    axios
+      .post(`http://localhost:3000/api/user/add-post/${userId}`, payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log("Post submitted successfully:", response.data);
+        resetForm();
+      })
+      .catch((error) => {
+        console.error("Error submitting post:", error);
+      });
+  };
 
   return (
     <div className="max-w-xl p-6 mx-auto bg-white border shadow-sm rounded-2xl border-slate-200/80">
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+        className="space-y-5"
+      >
         {/* Hidden Input File */}
         <input
           type="file"

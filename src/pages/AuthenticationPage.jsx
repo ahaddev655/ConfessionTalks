@@ -177,7 +177,7 @@ const AuthenticationPage = () => {
       return;
     }
     if (!id || id === null) {
-      toast.error("ID not found");
+      setLoading(false);
       return;
     }
     axios
