@@ -52,6 +52,9 @@ const PersonalProfile = () => {
           fname: data?.fname || "",
           lname: data?.lname || "",
           username: data?.username || "",
+          posts: data?.posts + data?.reels || 3,
+          followers: data?.followers || [],
+          following: data?.following || [],
           email: data?.email || "",
           profilePic: data?.profilePic?.startsWith("data:image")
             ? data?.profilePic
@@ -88,7 +91,6 @@ const PersonalProfile = () => {
   };
 
   // ---- Counts ----
-  const postsCount = userData?.posts?.length || 0;
   const followersCount = userData?.followers?.length || 0;
   const followingCount = userData?.following?.length || 0;
 
@@ -152,7 +154,7 @@ const PersonalProfile = () => {
                 ) : (
                   <>
                     <span className="text-sm font-bold sm:text-base text-slate-900">
-                      {postsCount}
+                      {userData?.posts || 0}
                     </span>
                     <span className="text-xs font-medium text-slate-500">
                       posts

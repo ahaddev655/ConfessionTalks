@@ -16,19 +16,29 @@ const Posts = () => {
   // ---- Functions ----
   const getDetails = () => {
     axios
-      .get(`http://localhost:3000/api/user/${id}`)
+      .get(`http://localhost:3000/api/user/posts/${id}`)
       .then((response) => {
-        const data = response?.data.user_details;
+        const data = response?.data;
         setPosts(data?.posts || []);
       })
       .catch((error) => {
-        // toast.error(error?.response?.data?.error || "Failed to fetch posts.");
+        toast.error(error?.response?.data?.error || "Failed to fetch posts.");
       });
   };
 
   const handleClosePopup = () => {
     setPopUpToggle(false);
     setSelectedPost(null);
+  };
+
+  const formatCount = (count) => {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + "M";
+    } else if (count >= 1000) {
+      return (count / 1000).toFixed(1) + "K";
+    } else {
+      return count.toString();
+    }
   };
 
   // ---- UseEffects ----
@@ -62,7 +72,13 @@ const Posts = () => {
           {/* Left Side: Post Image Container */}
           <div className="h-2/5 sm:h-full w-full sm:w-[45%] shrink-0 bg-slate-950 flex items-center justify-center">
             <img
-              src={selectedPost?.post || dummyImage}
+              src={
+                selectedPost?.post?.startsWith("data:image")
+                  ? selectedPost?.post
+                  : selectedPost?.post
+                    ? `data:image/png;base64,${selectedPost?.post}`
+                    : ""
+              }
               alt="Post media"
               className="object-cover w-full h-full"
             />
@@ -82,7 +98,7 @@ const Posts = () => {
 
               <div className="flex-1 min-w-0">
                 <h1 className="flex items-center gap-2 text-sm font-semibold truncate text-slate-900">
-                  {selectedPost?.userName || "ahad.shk.0"}
+                  {selectedPost?.username || "ahad.shk.0"}
                   <span className="text-slate-300">•</span>
                   <button
                     type="button"
@@ -92,22 +108,27 @@ const Posts = () => {
                   </button>
                 </h1>
                 <p className="text-xs truncate text-slate-500">
-                  Original Audio — {selectedPost?.userName || "ahad.shk.0"}
+                  Original Audio — {selectedPost?.username || "ahad.shk.0"}
                 </p>
               </div>
             </div>
 
             {/* Comments List Area */}
             <div className="flex-1 min-h-0 px-5 py-4 space-y-4 overflow-y-auto">
-              {Array(8)
-                .fill(null)
-                .map((_, i) => (
+              {selectedPost?.comments && selectedPost?.comments.length > 0 ? (
+                selectedPost?.comments.map((comment, i) => (
                   <Fragment key={i}>
                     <div className="flex items-start gap-3">
-                      <Link to={`/en/@ahad.shk.0`} className="shrink-0">
+                      <Link
+                        to={`/en/@${comment?.username || "unknown"}`}
+                        className="shrink-0"
+                      >
                         <img
-                          src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                          alt="Commenter avatar"
+                          src={
+                            comment.userProfilePic ||
+                            "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                          }
+                          alt={`@${comment?.username || "unknown"}'s profile`}
                           className="object-cover transition-all rounded-full w-9 h-9 ring-1 ring-slate-200 hover:ring-blue-600"
                         />
                       </Link>
@@ -115,19 +136,19 @@ const Posts = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <Link
-                            to={`/en/@ahad.shk.0`}
+                            to={`/en/@${comment?.username || "unknown"}`}
                             className="text-xs font-semibold truncate text-slate-900 hover:underline"
                           >
-                            @ahad.shk.0
+                            @{comment?.username || "unknown"}
                           </Link>
                         </div>
 
                         <p className="mt-1 text-sm leading-snug text-slate-700 wrap-break-word">
-                          Hello World
+                          {comment?.comment || "No comment text available."}
                         </p>
 
                         <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                          <span>12.1K likes</span>
+                          <span>{formatCount(comment?.likes || 0)}</span>
                         </div>
                       </div>
 
@@ -137,7 +158,14 @@ const Posts = () => {
                     </div>
                     <div className="my-2 border-b border-slate-100" />
                   </Fragment>
-                ))}
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-sm font-medium text-slate-500">
+                    No comments yet.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -156,7 +184,13 @@ const Posts = () => {
               }}
             >
               <img
-                src={post?.post || dummyImage}
+                src={
+                  post?.post?.startsWith("data:image")
+                    ? post?.post
+                    : post?.post
+                      ? `data:image/png;base64,${post?.post}`
+                      : ""
+                }
                 alt="User post"
                 className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
