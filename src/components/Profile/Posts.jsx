@@ -90,7 +90,13 @@ const Posts = () => {
             <div className="flex items-center gap-3 px-5 pb-3 border-b border-slate-100 shrink-0">
               <div className="w-10 h-10 overflow-hidden rounded-full bg-slate-100 shrink-0 ring-1 ring-slate-200">
                 <img
-                  src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                  src={
+                    selectedPost?.userProfilePic?.startsWith("data:image")
+                      ? selectedPost?.userProfilePic
+                      : selectedPost?.userProfilePic
+                        ? `data:image/png;base64,${selectedPost?.userProfilePic}`
+                        : ""
+                  }
                   alt="Avatar"
                   className="object-cover w-full h-full"
                 />

@@ -52,7 +52,7 @@ const PersonalProfile = () => {
           fname: data?.fname || "",
           lname: data?.lname || "",
           username: data?.username || "",
-          posts: data?.posts + data?.reels || 3,
+          posts: data?.posts + data?.reels || 0,
           followers: data?.followers || [],
           following: data?.following || [],
           email: data?.email || "",
@@ -232,7 +232,12 @@ const PersonalProfile = () => {
                   return (
                     <Link
                       key={link?.id || i}
-                      to={url}
+                      to={
+                        url?.startsWith("https://") ||
+                        url?.startsWith("http://")
+                          ? url
+                          : `https://${url}`
+                      }
                       target="_blank"
                       className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline truncate max-w-50 sm:max-w-xs transition-colors duration-150"
                     >

@@ -18,7 +18,7 @@ const Reels = () => {
   const videoRef = useRef(null);
 
   // ---- Variables ----
-  const id = localStorage.getItem("cota_id");
+  const userId = localStorage.getItem("cota_id");
 
   // ---- Functions ----
   const togglePlayPause = () => {
@@ -41,14 +41,38 @@ const Reels = () => {
 
   const getDetails = () => {
     axios
-      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/${id}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/reels/${userId}`)
       .then((response) => {
-        const data = response?.data.user_details;
-        setReels(data?.reels || []);
+        const data = response?.data;
+        // comments: []
+        // createdAt: "2026-09-12T07:49:50.921Z"
+        // description: "Hello World"
+        // likes: 0
+        // reel: "AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAE0Hb
+        // tags: "[\"hello\"]"
+        // thumbnail: "UklGRkpgAQBXRUJQVlA4WAoAAAAgAAAANwQAiAUASUNDUMgBA
+        // title: "Best Shayari"
+        // username: "ahad97140"
+        setReels([
+          ...data?.reels?.map((reel) => ({
+            thumbnail: reel?.thumbnail.startsWith("data:image")
+              ? reel?.thumbnail
+              : `data:image/png;base64,${reel?.thumbnail}`,
+            video: reel?.reel?.startsWith("data:video")
+              ? reel?.reel
+              : `data:video/mp4;base64,${reel?.reel}`,
+            title: reel?.title,
+            description: reel?.description,
+            likes: reel?.likes,
+            tags: reel?.tags,
+            createdAt: reel?.createdAt,
+            comments: reel?.comments,
+            username: reel?.username,
+            userProfilePic: reel?.userProfilePic,
+          })),
+        ]);
       })
-      .catch((error) => {
-        // toast.error(error?.response?.data?.error || "Failed to fetch reels.");
-      });
+      .catch((error) => {});
   };
 
   // ---- UseEffects ----
@@ -110,7 +134,11 @@ const Reels = () => {
             {videoShow ? (
               <video
                 ref={videoRef}
-                src={selectedVideo?.video || dummyVideo}
+                src={
+                  selectedVideo?.video.startsWith("data:video")
+                    ? selectedVideo?.video
+                    : `data:video/mp4;base64,${selectedVideo?.video}`
+                }
                 className="object-cover w-full h-full cursor-pointer"
                 loop
                 autoPlay
@@ -119,7 +147,11 @@ const Reels = () => {
               />
             ) : (
               <img
-                src={selectedVideo?.thumbnail || dummyImage}
+                src={
+                  selectedVideo?.thumbnail.startsWith("data:image")
+                    ? selectedVideo?.thumbnail
+                    : `data:image/png;base64,${selectedVideo?.thumbnail}`
+                }
                 alt="Reel preview"
                 className="object-cover w-full h-full"
               />
@@ -132,7 +164,13 @@ const Reels = () => {
             <div className="flex items-center gap-3 px-5 pb-3 border-b border-slate-100 shrink-0">
               <div className="w-10 h-10 overflow-hidden rounded-full bg-slate-100 shrink-0 ring-1 ring-slate-200">
                 <img
-                  src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                  src={
+                    selectedVideo?.userProfilePic?.startsWith("data:image")
+                      ? selectedVideo?.userProfilePic
+                      : selectedVideo?.userProfilePic
+                        ? `data:image/png;base64,${selectedVideo?.userProfilePic}`
+                        : "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                  }
                   alt="Avatar"
                   className="object-cover w-full h-full"
                 />
@@ -140,7 +178,7 @@ const Reels = () => {
 
               <div className="flex-1 min-w-0">
                 <h1 className="flex items-center gap-2 text-sm font-semibold truncate text-slate-900">
-                  ahad.shk.0
+                  {selectedVideo?.username}
                   <span className="text-slate-300">•</span>
                   <button
                     type="button"
@@ -150,21 +188,27 @@ const Reels = () => {
                   </button>
                 </h1>
                 <p className="text-xs truncate text-slate-500">
-                  Original Audio — ahad.shk.0
+                  Original Audio — {selectedVideo?.username}
                 </p>
               </div>
             </div>
 
             {/* Comments List Area */}
             <div className="flex-1 min-h-0 px-5 py-4 space-y-4 overflow-y-auto">
-              {Array(8)
-                .fill(null)
-                .map((_, i) => (
+              {selectedVideo?.comments?.length > 0 ? (
+                selectedVideo?.comments?.map((comment, i) => (
                   <Fragment key={i}>
                     <div className="flex items-start gap-3">
-                      <Link to={`/en/@ahad.shk.0`} className="shrink-0">
+                      <Link
+                        to={`/en/@${comment?.username}`}
+                        className="shrink-0"
+                      >
                         <img
-                          src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
+                          src={
+                            comment?.userProfilePic.startsWith("data:image")
+                              ? comment?.userProfilePic
+                              : `data:image/png;base64,${comment?.userProfilePic}`
+                          }
                           alt="Commenter avatar"
                           className="object-cover transition-all rounded-full w-9 h-9 ring-1 ring-slate-200 hover:ring-blue-600"
                         />
@@ -173,29 +217,39 @@ const Reels = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <Link
-                            to={`/en/@ahad.shk.0`}
+                            to={`/en/@${comment?.username}`}
                             className="text-xs font-semibold truncate text-slate-900 hover:underline"
                           >
-                            @ahad.shk.0
+                            @{comment?.username}
                           </Link>
                         </div>
 
                         <p className="mt-1 text-sm leading-snug text-slate-700 wrap-break-word">
-                          Hello World
+                          {comment?.comment}
                         </p>
 
                         <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                          <span>12.1K likes</span>
+                          <span>{comment?.likes} likes</span>
                         </div>
                       </div>
 
-                      <button className="p-1 transition-colors text-slate-400 hover:text-red-500">
+                      <button
+                        className="p-1 transition-colors text-slate-400 hover:text-red-500"
+                        // onClick={() => handleLike(comment?.id)}
+                      >
                         <Heart className="w-4 h-4" />
                       </button>
                     </div>
                     <div className="my-2 border-b border-slate-100" />
                   </Fragment>
-                ))}
+                ))
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-sm font-medium text-slate-500">
+                    No comments yet.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -214,7 +268,13 @@ const Reels = () => {
               }}
             >
               <img
-                src={reel?.thumbnail || dummyImage}
+                src={
+                  reel?.thumbnail.startsWith("data:image")
+                    ? reel?.thumbnail
+                    : reels?.thumbnail
+                      ? `data:image/png;base64,${reels?.thumbnail}`
+                      : dummyImage
+                }
                 alt="Reel thumbnail"
                 className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
               />
@@ -223,11 +283,11 @@ const Reels = () => {
               <div className="absolute inset-0 z-10 flex items-center justify-center gap-6 opacity-0 group-hover:opacity-100 bg-slate-900/40 backdrop-blur-[2px] transition-opacity duration-200">
                 <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
                   <Eye className="w-5 h-5" />
-                  <span>{reel?.views || "1.8K"}</span>
+                  <span>{reel?.views || 0}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
                   <Heart className="w-5 h-5 fill-white" />
-                  <span>{reel?.likes || "1.8K"}</span>
+                  <span>{reel?.likes}</span>
                 </div>
               </div>
             </div>
