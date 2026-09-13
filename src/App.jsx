@@ -22,10 +22,10 @@ import axios from "axios";
 function App() {
   useEffect(() => {
     axios
-      .delete("http://localhost:3000/api/user/expired-stories")
+      .delete(`${import.meta.env.VITE_LOCAL_API_URL}/user/expired-stories`)
       .then((response) => {
         axios
-          .delete("http://localhost:3000/api/auth/delete-tokens")
+          .delete(`${import.meta.env.VITE_LOCAL_API_URL}/auth/delete-tokens`)
           .then((response) => {})
           .catch((error) => {});
       })

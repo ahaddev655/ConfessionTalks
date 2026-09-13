@@ -96,7 +96,7 @@ const StoriesPage = () => {
   const storiesFetched = () => {
     const username = handleUserNameFilter();
     axios
-      .get(`http://localhost:3000/api/user/story/${username}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/story/${username}`)
       .then((response) => {
         if (response?.data?.success && response?.data?.stories) {
           setUserStories(response.data.stories);

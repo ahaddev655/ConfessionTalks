@@ -21,7 +21,7 @@ const MainLayout = () => {
     }
 
     axios
-      .get(`http://localhost:3000/api/auth/verify/${id}`, {
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/auth/verify/${id}`, {
         withCredentials: true,
       })
       .then((response) => {})

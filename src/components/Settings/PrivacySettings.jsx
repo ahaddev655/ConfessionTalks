@@ -16,7 +16,7 @@ const PrivacySettings = () => {
   // ---- Functions ----
   const fetchPrivacySettings = () => {
     axios
-      .get(`http://localhost:3000/api/user/${userId}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/${userId}`)
       .then((response) => {
         const data = response.data.user_details;
 
@@ -32,7 +32,7 @@ const PrivacySettings = () => {
 
   const updatePrivacySettings = () => {
     axios
-      .put(`http://localhost:3000/api/user/update-privacy-settings/${userId}`, {
+      .put(`${import.meta.env.VITE_LOCAL_API_URL}/user/update-privacy-settings/${userId}`, {
         isPrivate,
       })
       .then((response) => {

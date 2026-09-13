@@ -82,7 +82,7 @@ const ProfileSettings = () => {
     }
 
     axios
-      .get(`http://localhost:3000/api/user/${id}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/${id}`)
       .then((response) => {
         const data = response?.data?.user_details;
 
@@ -153,7 +153,7 @@ const ProfileSettings = () => {
     }
 
     axios
-      .put(`http://localhost:3000/api/user/update-profile/${id}`, formData)
+      .put(`${import.meta.env.VITE_LOCAL_API_URL}/user/update-profile/${id}`, formData)
       .then(() => {
         toast.success("Profile updated successfully!");
       })

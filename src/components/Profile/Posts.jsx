@@ -16,7 +16,7 @@ const Posts = () => {
   // ---- Functions ----
   const getDetails = () => {
     axios
-      .get(`http://localhost:3000/api/user/posts/${id}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/posts/${id}`)
       .then((response) => {
         const data = response?.data;
         setPosts(data?.posts || []);

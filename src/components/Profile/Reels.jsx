@@ -41,7 +41,7 @@ const Reels = () => {
 
   const getDetails = () => {
     axios
-      .get(`http://localhost:3000/api/user/${id}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/${id}`)
       .then((response) => {
         const data = response?.data.user_details;
         setReels(data?.reels || []);

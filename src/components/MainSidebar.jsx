@@ -27,7 +27,7 @@ const MainSidebar = () => {
   // ---- Functions ----
   const handleLogout = () => {
     axios
-      .delete("http://localhost:3000/api/auth/logout", {
+      .delete(`${import.meta.env.VITE_LOCAL_API_URL}/auth/logout`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -107,7 +107,7 @@ const MainSidebar = () => {
   const getDetails = () => {
     if (!id) return;
     axios
-      .get(`http://localhost:3000/api/user/${id}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/${id}`)
       .then((response) => {
         const data = response?.data?.user_details;
         if (data) {

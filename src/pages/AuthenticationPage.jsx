@@ -81,7 +81,7 @@ const AuthenticationPage = () => {
 
       // API Configuration
       axios
-        .post("http://localhost:3000/api/auth/register", formData, {
+        .post(`${import.meta.env.VITE_LOCAL_API_URL}/auth/register`, formData, {
           withCredentials: true, // To accept cookie
         })
         .then((response) => {
@@ -136,7 +136,7 @@ const AuthenticationPage = () => {
 
     // API Configuration
     axios
-      .post("http://localhost:3000/api/auth/login", payload, {
+      .post(`${import.meta.env.VITE_LOCAL_API_URL}/auth/login`, payload, {
         withCredentials: true, // To accept cookie
       })
       .then((response) => {
@@ -181,7 +181,7 @@ const AuthenticationPage = () => {
       return;
     }
     axios
-      .get(`http://localhost:3000/api/auth/verify/${id}`, {
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/auth/verify/${id}`, {
         withCredentials: true,
       })
       .then((response) => {

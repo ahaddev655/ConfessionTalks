@@ -126,7 +126,7 @@ const Reel = () => {
     }
 
     axios
-      .post(`http://localhost:3000/api/user/add-reel/${userId}`, payload, {
+      .post(`${import.meta.env.VITE_LOCAL_API_URL}/user/add-reel/${userId}`, payload, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

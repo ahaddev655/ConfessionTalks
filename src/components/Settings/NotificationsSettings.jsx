@@ -60,7 +60,7 @@ const NotificationsSettings = () => {
   // ---- Functions ----
   const notificationDetails = () => {
     axios
-      .get(`http://localhost:3000/api/user/${userId}`)
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/${userId}`)
       .then((response) => {
         const data = response.data.user_details;
 
@@ -86,7 +86,7 @@ const NotificationsSettings = () => {
 
     axios
       .put(
-        `http://localhost:3000/api/user/update-notifications/${userId}`,
+        `${import.meta.env.VITE_LOCAL_API_URL}/user/update-notifications/${userId}`,
         notifications,
       )
       .then((response) => {

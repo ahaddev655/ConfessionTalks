@@ -121,7 +121,7 @@ const AddStoryPage = () => {
 
     // API Call
     axios
-      .post(`http://localhost:3000/api/user/add-story/${id}`, payload)
+      .post(`${import.meta.env.VITE_LOCAL_API_URL}/user/add-story/${id}`, payload)
       .then((response) => {
         setTimeout(() => {
           toast.success("Story submitted successfully!");
