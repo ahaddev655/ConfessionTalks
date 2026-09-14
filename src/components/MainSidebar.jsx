@@ -83,12 +83,6 @@ const MainSidebar = () => {
       onClick: () => navigate("/en/settings"),
     },
     {
-      id: "saved",
-      label: "Saved",
-      icon: Bookmark,
-      onClick: () => navigate("/en/saved"),
-    },
-    {
       id: "report",
       label: "Report a Problem",
       icon: ShieldAlert,

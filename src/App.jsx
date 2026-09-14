@@ -62,23 +62,23 @@ function App() {
               element: <ProfileSettings />,
             },
             {
-              path: "/en/settings/notifications",
+              path: "notifications",
               element: <NotificationsSettings />,
             },
             {
-              path: "/en/settings/privacy",
+              path: "privacy",
               element: <PrivacySettings />,
             },
             {
-              path: "/en/settings/blocked",
+              path: "blocked",
               element: <BlockedUsersSettings />,
             },
             {
-              path: "/en/settings/help",
+              path: "help",
               element: <Help />,
             },
             {
-              path: "/en/settings/privacy-center",
+              path: "privacy-center",
               element: <PrivacyCenter />,
             },
           ],
