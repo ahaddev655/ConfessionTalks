@@ -6,11 +6,11 @@ const ErrorPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 bg-app-bg text-body-text selection:bg-brand-accent selection:text-white">
-      <div className="w-full max-w-md p-8 transition-all duration-300 border shadow-xl shadow-slate-200/50 rounded-2xl bg-card-bg border-borderbg-border-color">
-        <div className="flex flex-col items-center justify-center text-center">
+    <div className="flex justify-center items-center px-4 min-h-screen bg-app-bg text-body-text selection:bg-brand-accent selection:text-white">
+      <div className="p-8 w-full max-w-md rounded-2xl border shadow-xl transition-all duration-300 shadow-slate-200/50 bg-card-bg border-border-color">
+        <div className="flex flex-col justify-center items-center text-center">
           {/* Visual Graphic Element */}
-          <div className="flex items-center justify-center w-20 h-20 mb-5 rounded-full bg-brand-accent/10 text-brandbg-brand-accent">
+          <div className="flex justify-center items-center mb-5 w-20 h-20 rounded-full bg-brand-accent/10 text-brandbg-brand-accent">
             <Compass className="w-10 h-10 animate-spin-slow" />
           </div>
 
@@ -30,7 +30,7 @@ const ErrorPage = () => {
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-col-reverse items-center justify-center w-full gap-3 mt-8 sm:flex-row">
+          <div className="flex flex-col-reverse gap-3 justify-center items-center mt-8 w-full sm:flex-row">
             <button
               type="button"
               onClick={() => navigate(-1)}

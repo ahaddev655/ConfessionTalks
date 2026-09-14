@@ -152,7 +152,7 @@ const AddStoryPage = () => {
   const isFormEmpty = !formData.mediaPreview && !formData.storyText.trim();
 
   return (
-    <div className="max-w-4xl p-4 mx-auto sm:p-6">
+    <div className="p-4 mx-auto max-w-4xl sm:p-6">
       {/* Toaster */}
       <ToastContainer
         autoClose={1500}
@@ -166,10 +166,10 @@ const AddStoryPage = () => {
       {/* Content */}
       <div>
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6 space-y-1">
+        <div className="flex gap-3 items-center mb-6 space-y-1">
           {/* Back Button */}
           <div
-            className="grid w-10 h-10 transition-all duration-200 ease-in-out bg-white border rounded-lg shadow-md cursor-pointer hover:shadow-xl place-items-center border-border-color hover:border-brand-accent group"
+            className="grid place-items-center w-10 h-10 bg-white rounded-lg border shadow-md transition-all duration-200 ease-in-out cursor-pointer hover:shadow-xl border-border-color hover:border-brand-accent group"
             onClick={() => navigate(-1)}
           >
             <ArrowLeft
@@ -179,11 +179,11 @@ const AddStoryPage = () => {
           </div>
           {/* Content */}
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900">
                 Create Your Story
               </h1>
-              <Sparkles size={20} className="text-brand-accent animate-pulse" />
+              <Sparkles size={20} className="animate-pulse text-brand-accent" />
             </div>
             <p className="text-sm text-slate-500">
               Share quick photos or short videos with your audience.
@@ -196,7 +196,7 @@ const AddStoryPage = () => {
         {/* Editor Form */}
         <form
           onSubmit={handleSubmit}
-          className="grid items-start grid-cols-1 gap-8 md:grid-cols-12"
+          className="grid grid-cols-1 gap-8 items-start md:grid-cols-12"
         >
           {/* Hidden File Input */}
           <input
@@ -213,13 +213,13 @@ const AddStoryPage = () => {
               Story Live Preview
             </label>
 
-            <div className="relative flex items-center justify-center w-full overflow-hidden border-4 shadow-xl aspect-9/16 max-h-120 bg-slate-950 rounded-3xl border-slate-900 group">
+            <div className="flex overflow-hidden relative justify-center items-center w-full rounded-3xl border-4 shadow-xl aspect-9/16 max-h-120 bg-slate-950 border-slate-900 group">
               {!formData.mediaPreview ? (
                 <div
                   onClick={() => fileRef.current?.click()}
-                  className="flex flex-col items-center justify-center w-full h-full p-6 text-center transition-colors cursor-pointer hover:bg-slate-900/50"
+                  className="flex flex-col justify-center items-center p-6 w-full h-full text-center transition-colors cursor-pointer hover:bg-slate-900/50"
                 >
-                  <div className="p-4 mb-3 transition-all rounded-full bg-slate-800 text-slate-400 group-hover:text-white group-hover:scale-110">
+                  <div className="p-4 mb-3 rounded-full transition-all bg-slate-800 text-slate-400 group-hover:text-white group-hover:scale-110">
                     <ImagePlus size={32} strokeWidth={1.5} />
                   </div>
                   <p className="text-sm font-semibold text-slate-300">
@@ -273,11 +273,11 @@ const AddStoryPage = () => {
                   )}
 
                   {/* Media Controls */}
-                  <div className="absolute flex items-center gap-2 transition-opacity opacity-0 top-3 right-3 group-hover:opacity-100">
+                  <div className="flex absolute top-3 right-3 gap-2 items-center opacity-0 transition-opacity group-hover:opacity-100">
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="p-2 text-white transition-colors rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md"
+                      className="p-2 text-white rounded-full backdrop-blur-md transition-colors bg-black/60 hover:bg-black/80"
                       title="Change Media"
                     >
                       <RefreshCw size={15} />
@@ -285,7 +285,7 @@ const AddStoryPage = () => {
                     <button
                       type="button"
                       onClick={handleRemoveMedia}
-                      className="p-2 text-white transition-colors rounded-full bg-black/60 hover:bg-red-500 backdrop-blur-md"
+                      className="p-2 text-white rounded-full backdrop-blur-md transition-colors bg-black/60 hover:bg-red-500"
                       title="Remove Media"
                     >
                       <X size={15} />
@@ -297,7 +297,7 @@ const AddStoryPage = () => {
           </div>
 
           {/* Right Column: Customization Controls */}
-          <div className="p-6 space-y-6 bg-white border shadow-sm md:col-span-7 border-slate-200/80 rounded-2xl">
+          <div className="p-6 space-y-6 bg-white rounded-2xl border shadow-sm md:col-span-7 border-slate-200/80">
             {/* Text Overlay Input */}
             <div className="space-y-2">
               <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-600">
@@ -342,7 +342,7 @@ const AddStoryPage = () => {
 
                 {/* Background Toggle & Color Selection */}
                 <div className="pt-2 space-y-3 border-t border-slate-100">
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between items-center">
                     <label className="text-xs font-semibold tracking-wider uppercase text-slate-600">
                       Text Background
                     </label>
@@ -443,7 +443,7 @@ const AddStoryPage = () => {
             )}
 
             {/* Form Actions */}
-            <div className="flex items-center justify-end pt-4 border-t border-slate-100">
+            <div className="flex justify-end items-center pt-4 border-t border-slate-100">
               <button
                 type="submit"
                 disabled={isFormEmpty || isSubmitting}

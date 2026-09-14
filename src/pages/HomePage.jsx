@@ -17,7 +17,9 @@ import {
   TriangleAlert,
   Link2,
   CodeXml,
+  Plus,
 } from "lucide-react";
+import axios from "axios";
 
 const formatCount = (count) => {
   if (count === undefined || count === null) return "0";
@@ -29,10 +31,7 @@ const formatCount = (count) => {
 
 const HomePage = () => {
   // ---- Variables ----
-  const [userData, setUserData] = useState({
-    uname: "ahad.shk.0",
-  });
-  const navigate = useNavigate();
+  const id = localStorage.getItem("cota_id");
 
   // ---- Arrays ----
   const initialVideos = [
@@ -126,6 +125,10 @@ const HomePage = () => {
   ];
 
   // ---- UseStates ----
+  const [userData, setUserData] = useState({
+    username: "",
+    userProfilePic: null,
+  });
   const [videos, setVideos] = useState(initialVideos);
   const [isMuted, setIsMuted] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -134,6 +137,8 @@ const HomePage = () => {
   const [newComment, setNewComment] = useState("");
   const [dropdownToggle, setDropdownToggle] = useState(false);
   const [friends, setFriends] = useState(null);
+  const currentComments = selectedVideo?.commentList || [];
+  const [loading, setLoading] = useState(true);
 
   // ---- Refs ----
   const scrollContainerRef = useRef(null);
@@ -182,7 +187,7 @@ const HomePage = () => {
     const updatedComment = {
       id: Date.now(),
       user: {
-        username: uname,
+        username: username,
         avatar:
           "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg",
       },
@@ -228,7 +233,23 @@ const HomePage = () => {
     return () => observer.disconnect();
   }, [videos]);
 
-  const currentComments = selectedVideo?.commentList || [];
+  useEffect(() => {
+    setLoading(true);
+
+    axios
+      .get(`${import.meta.env.VITE_LOCAL_API_URL}/user/${id}`)
+      .then((response) => {
+        const data = response?.data.user_details;
+        setUserData({
+          username: data?.username,
+          userProfilePic: data?.profilePic,
+        });
+      })
+      .catch((error) => {})
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen antialiased bg-slate-50 text-slate-800">
@@ -246,7 +267,7 @@ const HomePage = () => {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+          <div className="flex justify-between items-center px-5 py-4 border-b border-slate-200">
             <h2 className="text-base font-semibold text-slate-900">
               Comments ({currentComments.length})
             </h2>
@@ -260,10 +281,10 @@ const HomePage = () => {
           </div>
 
           {/* Comment List */}
-          <div className="flex-1 p-5 space-y-4 overflow-y-auto">
+          <div className="overflow-y-auto flex-1 p-5 space-y-4">
             {currentComments.length > 0 ? (
               currentComments.map((comment) => (
-                <div key={comment.id} className="flex items-start gap-3 group">
+                <div key={comment.id} className="flex gap-3 items-start group">
                   <Link
                     to={`/en/@${comment.user.username}`}
                     className="shrink-0"
@@ -271,11 +292,11 @@ const HomePage = () => {
                     <img
                       src={comment.user.avatar}
                       alt={comment.user.username}
-                      className="object-cover rounded-full w-9 h-9 ring-1 ring-slate-200"
+                      className="object-cover w-9 h-9 rounded-full ring-1 ring-slate-200"
                     />
                   </Link>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex gap-2 items-center">
                       <Link
                         to={`/en/@${comment.user.username}`}
                         className="text-xs font-semibold text-slate-900 hover:underline"
@@ -296,8 +317,8 @@ const HomePage = () => {
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-slate-500">
-                <MessageCircle className="w-10 h-10 mb-2 opacity-50 stroke-1" />
+              <div className="flex flex-col justify-center items-center h-full text-slate-500">
+                <MessageCircle className="mb-2 w-10 h-10 opacity-50 stroke-1" />
                 <p className="text-sm">
                   No comments yet. Start the conversation!
                 </p>
@@ -308,7 +329,7 @@ const HomePage = () => {
           {/* Comment Input */}
           <form
             onSubmit={handleAddComment}
-            className="flex items-center gap-2 p-3 border-t border-slate-200 bg-slate-50"
+            className="flex gap-2 items-center p-3 border-t border-slate-200 bg-slate-50"
           >
             <input
               type="text"
@@ -329,21 +350,16 @@ const HomePage = () => {
       </div>
 
       {/* Main Feed Container */}
-      <main className="max-w-md py-6 mx-auto">
-        <div className="flex items-center gap-3 mb-6">
+      <main className="py-6 mx-auto max-w-md">
+        <div className="flex gap-3 items-center mb-6">
           {/* Add Story */}
           <Link
             to="/story"
-            className="flex flex-col items-center w-16 gap-1 shrink-0 group/story"
+            className="flex flex-col gap-1 items-center w-16 shrink-0 group/story"
           >
-            {/* Gradient Ring Wrapper */}
-            <div className="p-0.5 rounded-full bg-linear-to-tr from-amber-500 via-rose-500 to-blue-600 group-hover/story:scale-105 transition-transform duration-200">
-              <div className="p-0.5 bg-white rounded-full">
-                <img
-                  src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                  alt="Add Story"
-                  className="object-cover w-12 h-12 rounded-full"
-                />
+            <div className="p-0.5 border-2 rounded-full border-brand-accent">
+              <div className="p-0.5 rounded-full bg-card-bg w-12 h-12 flex items-center justify-center">
+                <Plus strokeWidth={1.25} size={30} className="text-gray-600" />
               </div>
             </div>
             <span className="w-full text-xs text-center truncate transition-colors text-slate-500 group-hover/story:text-slate-900">
@@ -365,47 +381,58 @@ const HomePage = () => {
 
             <div
               ref={scrollContainerRef}
-              className="flex items-center gap-3 py-1 overflow-x-auto scroll-smooth scrollbar-none"
+              className="flex overflow-x-auto gap-3 items-center py-1 scroll-smooth scrollbar-none"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              <Link
-                to={`/stories/@${userData.uname || ""}`}
-                className="flex flex-col items-center w-16 gap-1 shrink-0 group/story"
-              >
-                <div className="p-0.5 rounded-full bg-linear-to-tr from-amber-500 via-rose-500 to-blue-600 group-hover/story:scale-105 transition-transform duration-200">
-                  <div className="p-0.5 bg-white rounded-full">
-                    <img
-                      src={
-                        userData.profilePic ||
-                        "https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                      }
-                      alt="My Story"
-                      className="object-cover w-12 h-12 rounded-full"
-                    />
-                  </div>
+              {loading ? (
+                // <div className="flex flex-col gap-1">
+                // </div>
+                <div className="flex flex-col gap-1 items-center w-16 shrink-0 group/story">
+                  <div className="w-full rounded-full animate-pulse h-15 bg-slate-200" />
+                  <div className="mx-auto h-3 rounded-full animate-pulse w-17 bg-slate-200" />
                 </div>
-                <span className="w-full text-xs text-center truncate transition-colors text-slate-500 group-hover/story:text-slate-900">
-                  Your story
-                </span>
-              </Link>
+              ) : (
+                <Link
+                  to={`/stories/@${userData.username || ""}`}
+                  className="flex flex-col gap-1 items-center w-16 shrink-0 group/story"
+                >
+                  <div className="p-0.5 rounded-full bg-linear-to-tr from-amber-500 via-rose-500 to-blue-600 group-hover/story:scale-105 transition-transform duration-200">
+                    <div className="p-0.5 bg-white rounded-full">
+                      <img
+                        src={
+                          userData?.userProfilePic?.startsWith("data:image")
+                            ? userData?.userProfilePic
+                            : `data:image/png;base64,${userData?.userProfilePic}`
+                        }
+                        alt="My Story"
+                        className="object-cover w-12 h-12 rounded-full"
+                      />
+                    </div>
+                  </div>
+                  <span className="w-full text-xs text-center truncate transition-colors text-slate-500 group-hover/story:text-slate-900">
+                    Your story
+                  </span>
+                </Link>
+              )}
+
               {/* {Array.from({ length: 10 }).map((_, index) => (
                 <Link
-                  to={`/stories/@${uname}`}
+                  to={`/stories/@${username}`}
                   key={index}
-                  className="flex flex-col items-center w-16 gap-1 shrink-0 group/story"
+                  className="flex flex-col gap-1 items-center w-16 shrink-0 group/story"
                 >
                   
                   <div className="p-0.5 rounded-full bg-linear-to-tr from-amber-500 via-rose-500 to-blue-600 group-hover/story:scale-105 transition-transform duration-200">
                     <div className="p-0.5 bg-white rounded-full">
                       <img
                         src="https://i.pinimg.com/1200x/64/bf/8c/64bf8c6fb58635059b76999b7a3eeda7.jpg"
-                        alt={`Story by ${uname}`}
+                        alt={`Story by ${username}`}
                         className="object-cover w-12 h-12 rounded-full"
                       />
                     </div>
                   </div>
                   <span className="w-full text-xs text-center truncate transition-colors text-slate-500 group-hover/story:text-slate-900">
-                    {index === 0 ? "Your story" : uname}
+                    {index === 0 ? "Your story" : username}
                   </span>
                 </Link>
               ))} */}
@@ -432,10 +459,10 @@ const HomePage = () => {
             return (
               <div
                 key={video.id}
-                className="relative overflow-hidden bg-white border shadow-sm border-slate-200 rounded-3xl"
+                className="overflow-hidden relative bg-white rounded-3xl border shadow-sm border-slate-200"
               >
                 {/* Header Profile Bar */}
-                <div className="flex items-center justify-between px-4 py-3 bg-white">
+                <div className="flex justify-between items-center px-4 py-3 bg-white">
                   {/* Left Side */}
                   <div className="flex items-center gap-2.5">
                     <img
@@ -506,7 +533,7 @@ const HomePage = () => {
                   />
 
                   {/* Gradient Mask for Overlay Text */}
-                  <div className="absolute inset-x-0 bottom-0 h-40 pointer-events-none bg-linear-to-t from-black/80 via-black/30 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 h-40 to-transparent pointer-events-none bg-linear-to-t from-black/80 via-black/30" />
 
                   {/* Mute Toggle */}
                   <button
@@ -515,7 +542,7 @@ const HomePage = () => {
                       setIsMuted(!isMuted);
                     }}
                     type="button"
-                    className="absolute z-10 p-2 text-white transition-all border rounded-full top-4 right-4 bg-slate-900/50 backdrop-blur-md hover:bg-slate-900/70 border-white/20"
+                    className="absolute top-4 right-4 z-10 p-2 text-white rounded-full border backdrop-blur-md transition-all bg-slate-900/50 hover:bg-slate-900/70 border-white/20"
                     aria-label={isMuted ? "Unmute video" : "Mute video"}
                   >
                     {isMuted ? <VolumeOff size={16} /> : <Volume2 size={16} />}
@@ -523,8 +550,8 @@ const HomePage = () => {
                 </div>
 
                 {/* Bottom Interactive Action Bar */}
-                <div className="flex items-center justify-between px-5 py-3 bg-white">
-                  <div className="flex items-center gap-5">
+                <div className="flex justify-between items-center px-5 py-3 bg-white">
+                  <div className="flex gap-5 items-center">
                     {/* Like Action */}
                     <button
                       type="button"
@@ -535,7 +562,7 @@ const HomePage = () => {
                         size={20}
                         className={`transition-all duration-200 ${
                           isLiked
-                            ? "fill-red-600 text-red-600 scale-110"
+                            ? "text-red-600 scale-110 fill-red-600"
                             : "group-hover:scale-110"
                         }`}
                       />
@@ -570,7 +597,7 @@ const HomePage = () => {
                       size={20}
                       className={`transition-all duration-200 ${
                         isSaved
-                          ? "fill-amber-500 text-amber-500 scale-110"
+                          ? "text-amber-500 scale-110 fill-amber-500"
                           : "group-hover:scale-110"
                       }`}
                     />
